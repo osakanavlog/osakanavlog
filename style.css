@@ -86,7 +86,7 @@ body {
 
 .video-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 1.5rem;
   margin: 1.5rem 0;
   padding: 0;
@@ -120,6 +120,16 @@ body {
 .about,
 .contact {
   margin: 2.5rem 0;
+}
+
+.contact-address {
+  margin: 0.5rem 0 0;
+}
+
+.contact-note {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.85rem;
 }
 
 a {

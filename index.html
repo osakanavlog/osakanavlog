@@ -12,7 +12,7 @@
     <div class="container">
       <h1 class="site-title">おさかなvlog</h1>
       <nav class="site-nav" aria-label="メインナビゲーション">
-        <ul>
+        <ul role="list">
           <li><a href="#latest">最新の動画</a></li>
           <li><a href="#about">このブログについて</a></li>
           <li><a href="#contact">お問い合わせ</a></li>
@@ -29,7 +29,7 @@
 
     <section id="latest" class="videos">
       <h2>最新の動画</h2>
-      <ul class="video-list">
+      <ul class="video-list" role="list">
         <li class="video-card">
           <div class="thumbnail" aria-hidden="true"></div>
           <h3>はじめての水槽づくり</h3>
@@ -58,7 +58,12 @@
 
     <section id="contact" class="contact">
       <h2>お問い合わせ</h2>
-      <p>ご感想やご質問は、<a href="mailto:hello@osakanavlog.example">hello@osakanavlog.example</a> までお気軽にどうぞ。</p>
+      <!-- TODO: 公開前に、実際に受信できるメールアドレス（または問い合わせフォーム）へ差し替えてください。 -->
+      <p>ご感想やご質問は、下記の連絡先までお気軽にどうぞ。</p>
+      <p class="contact-address">
+        <code>hello@example.com</code>
+        <span class="contact-note">※ 雛形用のサンプルアドレスです。受信できないため、公開前に差し替えてください。</span>
+      </p>
     </section>
   </main>
 
