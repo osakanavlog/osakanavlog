@@ -14,6 +14,7 @@
 | --- | --- |
 | `index.html` | トップページ（日本語） |
 | `style.css` | スタイルシート |
+| `scripts/check.py` | 静的チェック（依存パッケージ不要） |
 
 ## 使い方
 
@@ -26,3 +27,14 @@ python3 -m http.server
 ```
 
 ブラウザで <http://localhost:8000> を開いてください。
+
+## チェック
+
+変更後は、依存パッケージ不要の静的チェックを実行できます:
+
+```sh
+python3 scripts/check.py
+```
+
+HTML タグの対応、`<html lang="ja">`、ページ内リンクや参照ファイルの存在、
+CSS の波かっこの対応を検査します。
