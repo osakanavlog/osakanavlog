@@ -2,7 +2,8 @@
 // Claude Code とのチャット内容を Obsidian vault に Markdown として記録するフック。
 //
 // 環境変数
-//   OBSIDIAN_VAULT         vault のルートパス（未設定なら何もしない）
+//   OBSIDIAN_VAULT         vault のルートパス
+//                          未設定なら Obsidian の設定から自動検出する
 //   OBSIDIAN_CLAUDE_FOLDER vault 内の保存先フォルダ（既定: Claude）
 //   OBSIDIAN_LOG_MAX_CHARS 1 発言あたりの最大文字数（既定: 8000）
 //
@@ -10,8 +11,8 @@
 // 記録に失敗してもセッションを止めないよう、常に終了コード 0 で終わる。
 
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { resolveVault } from '../tools/obsidian-vault.mjs';
 
 const MAX_CHARS = Number(process.env.OBSIDIAN_LOG_MAX_CHARS) || 8000;
 
@@ -23,10 +24,6 @@ function stamp(d) {
     time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
     compact: `${pad(d.getHours())}${pad(d.getMinutes())}`,
   };
-}
-
-function expandHome(p) {
-  return p.startsWith('~') ? join(homedir(), p.slice(1)) : p;
 }
 
 function truncate(text) {
@@ -110,8 +107,10 @@ function lastAssistantText(transcriptPath) {
 }
 
 try {
-  const vault = expandHome(process.env.OBSIDIAN_VAULT || '');
-  if (!vault || !existsSync(vault)) process.exit(0);
+  // OBSIDIAN_VAULT がなくても、Obsidian の設定から vault を見つける
+  const found = resolveVault();
+  if (!found || !found.exists) process.exit(0);
+  const vault = found.path;
 
   let payload = {};
   try {

@@ -16,8 +16,8 @@
 //   OBSIDIAN_READ_MAX      read で表示する最大文字数（既定: 40000）
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { basename, dirname, join, relative, sep } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
+import { resolveVault } from './obsidian-vault.mjs';
 
 const SKIP_DIRS = new Set(['.obsidian', '.trash', '.git', '.smart-env', 'node_modules']);
 const READ_MAX = Number(process.env.OBSIDIAN_READ_MAX) || 40000;
@@ -28,11 +28,13 @@ function die(message) {
 }
 
 function vaultRoot() {
-  const raw = process.env.OBSIDIAN_VAULT || '';
-  if (!raw) die('OBSIDIAN_VAULT が設定されていません。vault のパスを環境変数に設定してください。');
-  const root = raw.startsWith('~') ? join(homedir(), raw.slice(1)) : raw;
-  if (!existsSync(root)) die(`vault が見つかりません: ${root}`);
-  return root;
+  const found = resolveVault();
+  if (!found) {
+    die('vault が見つかりません。Obsidian で vault を開いたことがあるか確認するか、'
+      + 'OBSIDIAN_VAULT にパスを設定してください。');
+  }
+  if (!found.exists) die(`vault が見つかりません: ${found.path}`);
+  return found.path;
 }
 
 // vault 内の .md をすべて列挙する（更新が新しい順）。

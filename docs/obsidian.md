@@ -10,19 +10,32 @@ Claude Code と Obsidian vault をつなぐ仕組みです。2 つの部分か�
 
 ## 設定
 
-### 1 コマンドで設定する
+### 記録だけなら設定は要りません
 
-vault のパスを渡すだけです。Local REST API プラグインの API キーがあれば標準入力から渡します
-（コマンドライン引数では受け取りません。シェル履歴に残るためです）。
+vault の場所は自動で見つけます。優先順位は次のとおりです。
+
+1. 環境変数 `OBSIDIAN_VAULT`
+2. **Obsidian 自身の設定ファイル**（`obsidian.json`）に登録された vault
+   — 開いているもの、次に最近使ったものを選びます
+3. よくある置き場所の走査（`.obsidian` を持つフォルダ）
+
+つまり **Obsidian で一度でも vault を開いていれば、何も設定しなくてもチャットの記録が残ります。**
+ローカルの Claude Code でこのリポジトリを開き直すだけです。
+
+vault が複数ある場合は上の順で 1 つ選び、`doctor` が他の候補も表示します。
+別の vault を使いたいときだけ `OBSIDIAN_VAULT` で指定してください。
+
+### プラグインも使う場合
+
+Local REST API プラグイン経由（MCP）にするときだけ、setup を実行します。
+API キーは標準入力から渡します（コマンドライン引数では受け取りません。シェル履歴に残るためです）。
 
 ```bash
-# プラグインを使う場合（Obsidian を起動しておく）
 read -rs OBSIDIAN_API_KEY && export OBSIDIAN_API_KEY
-echo "$OBSIDIAN_API_KEY" | node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
-
-# プラグインを使わない場合
-node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
+echo "$OBSIDIAN_API_KEY" | node .claude/tools/obsidian.mjs setup
 ```
+
+`--vault` は省略できます（自動検出）。別の vault を使うときだけ `--vault ~/path/to/Vault` を付けます。
 
 setup がやること:
 
@@ -43,7 +56,7 @@ node .claude/tools/obsidian.mjs doctor
 ```
 
 ```
-✓ vault      /Users/me/Documents/MyVault（ノート 312 件）
+✓ vault      /Users/me/Documents/MyVault（ノート 312 件・obsidian.json）
 ✓ APIキー    設定済み（末尾 ee86）
 ✓ 接続       http://127.0.0.1:27123（HTTP 200）
 ✓ MCP設定    http://127.0.0.1:27123/mcp/

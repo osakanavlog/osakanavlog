@@ -11,11 +11,12 @@
 
 ## Obsidian 連携
 
-Claude Code と Obsidian vault をつないでいます。設定は 1 コマンドです。
+Claude Code と Obsidian vault をつないでいます。**チャットの記録は設定不要**で、
+Obsidian で一度でも vault を開いていれば自動で見つけて書き残します。
 
 ```bash
-node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
-node .claude/tools/obsidian.mjs doctor    # 点検
+node .claude/tools/obsidian.mjs doctor    # 状態を点検
+node .claude/tools/obsidian.mjs setup     # プラグイン(MCP)も使う場合
 ```
 
 - **自動記録** — チャットの内容がセッションごとのノートに書き残される

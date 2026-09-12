@@ -7,16 +7,15 @@
 // 環境変数 OBSIDIAN_API_KEY か標準入力から渡す。
 
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { detectEndpoint, probe, DEFAULT_ENDPOINTS } from './obsidian-rest.mjs';
+import { resolveVault, expandHome as expand } from './obsidian-vault.mjs';
 
 const OK = '✓';
 const NG = '✗';
 const WARN = '!';
 
 const projectDir = () => process.env.CLAUDE_PROJECT_DIR || process.cwd();
-const expandHome = (p) => (p.startsWith('~') ? join(homedir(), p.slice(1)) : p);
 
 function readJson(path) {
   if (!existsSync(path)) return null;
@@ -55,19 +54,23 @@ export async function doctor() {
   const fixes = [];
   let failed = 0;
 
-  // 1. vault
-  const vaultRaw = process.env.OBSIDIAN_VAULT || '';
-  const vault = vaultRaw ? expandHome(vaultRaw) : '';
-  if (!vault) {
-    lines.push(`${NG} vault      OBSIDIAN_VAULT が未設定`);
-    fixes.push('OBSIDIAN_VAULT に vault のパスを設定してください（setup が書き込みます）。');
+  // 1. vault（環境変数 → Obsidian の設定 → 走査、の順に探す）
+  const found = resolveVault();
+  if (!found) {
+    lines.push(`${NG} vault      見つかりません`);
+    fixes.push('Obsidian で vault を一度開くか、OBSIDIAN_VAULT にパスを設定してください。');
     failed++;
-  } else if (!existsSync(vault)) {
-    lines.push(`${NG} vault      パスが存在しません: ${vault}`);
-    fixes.push(`${vault} が正しい vault のパスか確認してください。`);
+  } else if (!found.exists) {
+    lines.push(`${NG} vault      パスが存在しません: ${found.path}`);
+    fixes.push(`${found.path} が正しい vault のパスか確認してください。`);
     failed++;
   } else {
-    lines.push(`${OK} vault      ${vault}（ノート ${countNotes(vault)} 件）`);
+    lines.push(`${OK} vault      ${found.path}（ノート ${countNotes(found.path)} 件・${found.source}）`);
+    if (found.all && found.all.length > 1) {
+      lines.push(`${WARN} vault複数   ${found.all.length} 個見つかりました。上のものを使います`);
+      fixes.push(`別の vault を使うなら OBSIDIAN_VAULT で指定してください:\n${
+        found.all.slice(1, 4).map((v) => `  ${v}`).join('\n')}`);
+    }
   }
 
   // 2. API キー
@@ -152,14 +155,18 @@ export async function doctor() {
 export async function setup({ flags }, stdin) {
   const root = projectDir();
   const key = (stdin || '').trim() || process.env.OBSIDIAN_API_KEY || '';
-  const vaultRaw = flags.vault ? String(flags.vault) : process.env.OBSIDIAN_VAULT || '';
-
+  let vaultRaw = flags.vault ? String(flags.vault) : '';
   if (!vaultRaw) {
-    console.error('vault のパスを渡してください: --vault ~/Documents/MyVault');
-    process.exit(1);
-  }
-  if (!existsSync(expandHome(vaultRaw))) {
-    console.error(`vault が見つかりません: ${expandHome(vaultRaw)}`);
+    const found = resolveVault();
+    if (!found || !found.exists) {
+      console.error('vault が見つかりません。Obsidian で vault を一度開くか、'
+        + '--vault ~/Documents/MyVault のように指定してください。');
+      process.exit(1);
+    }
+    vaultRaw = found.path;
+    console.log(`vault を検出しました: ${found.path}（${found.source}）`);
+  } else if (!existsSync(expand(vaultRaw))) {
+    console.error(`vault が見つかりません: ${expand(vaultRaw)}`);
     process.exit(1);
   }
 
