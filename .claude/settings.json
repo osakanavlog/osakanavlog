@@ -57,5 +57,8 @@
       "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" links:*)",
       "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" tags:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "obsidian"
+  ]
 }

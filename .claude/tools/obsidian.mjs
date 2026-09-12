@@ -3,9 +3,16 @@
 //
 //   node .claude/tools/obsidian.mjs <コマンド> [引数]
 //
+// 2 つの動かし方がある。
+//   ファイル直読み  OBSIDIAN_VAULT だけ設定。Obsidian が閉じていても動く。全コマンド対応
+//   REST API 経由   OBSIDIAN_API_KEY も設定。Obsidian 起動中の vault を Local REST API で操作
+//                   （links / tags は vault 全体の走査が要るので常にファイル直読み）
+//
 // 環境変数
-//   OBSIDIAN_VAULT         vault のルートパス（必須）
-//   OBSIDIAN_DAILY_FOLDER  デイリーノートのフォルダ（既定: vault 直下）
+//   OBSIDIAN_VAULT         vault のルートパス
+//   OBSIDIAN_API_KEY       Local REST API プラグインの API キー（設定すると REST 経由になる）
+//   OBSIDIAN_API_URL       REST API の URL（既定: https://127.0.0.1:27124）
+//   OBSIDIAN_DAILY_FOLDER  デイリーノートのフォルダ（既定: vault 直下、ファイル直読み時のみ）
 //   OBSIDIAN_READ_MAX      read で表示する最大文字数（既定: 40000）
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -237,7 +244,7 @@ const commands = {
   },
 };
 
-const [command, ...rest] = process.argv.slice(2);
+const [command, ...argv] = process.argv.slice(2);
 if (!command || command === 'help' || !commands[command]) {
   console.log(`使い方: node .claude/tools/obsidian.mjs <コマンド>
 
@@ -251,8 +258,27 @@ if (!command || command === 'help' || !commands[command]) {
   links <ノート>                       発リンクと被リンク
   tags [--limit n]                     タグ一覧
 
-環境変数 OBSIDIAN_VAULT に vault のパスが必要です。`);
+OBSIDIAN_VAULT に vault のパスが必要です。OBSIDIAN_API_KEY も設定すると
+Local REST API 経由になります（links / tags は常にファイル直読み）。`);
   process.exit(command && command !== 'help' ? 1 : 0);
 }
 
-commands[command](vaultRoot(), parseArgs(rest));
+// OBSIDIAN_API_KEY があれば Local REST API 経由（Obsidian 起動中の vault を直接操作）。
+// links / tags は vault 全体の走査が要るので、常にファイルを直接読む。
+const REST_COMMANDS = new Set(['search', 'read', 'list', 'new', 'append', 'daily']);
+const STDIN_COMMANDS = new Set(['new', 'append', 'daily']);
+const args = parseArgs(argv);
+
+if (process.env.OBSIDIAN_API_KEY && REST_COMMANDS.has(command)) {
+  const { rest } = await import('./obsidian-rest.mjs');
+  try {
+    await rest[command](args, STDIN_COMMANDS.has(command) ? readStdin() : '');
+  } catch (error) {
+    die(error.message);
+  }
+} else {
+  if (process.env.OBSIDIAN_API_KEY && !process.env.OBSIDIAN_VAULT) {
+    die(`${command} は vault のファイルを直接読む必要があります。OBSIDIAN_VAULT にパスも設定してください。`);
+  }
+  commands[command](vaultRoot(), args);
+}

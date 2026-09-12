@@ -5,9 +5,14 @@ Claude Code と Obsidian vault をつなぐ仕組みです。2 つの部分か�
 1. **自動記録** — チャットの内容をフックが vault に書き残す（設定すれば勝手に動く）
 2. **読み書き** — Claude が vault を検索・参照し、頼まれればノートを書く（CLI とスキル）
 
+接続方法は 2 通りあります。**Obsidian 起動中なら Local REST API プラグイン経由（MCP）**が本筋で、
+プラグインを使わない・Obsidian を閉じている場合は vault のファイルを直接読み書きします。
+
 ## 設定
 
-どちらも `OBSIDIAN_VAULT` に vault のルートパスを渡すだけで有効になります。
+### ファイル直読み
+
+`OBSIDIAN_VAULT` に vault のルートパスを渡すだけです。
 未設定なら自動記録は何もせず、読み書きツールはパスが必要だと答えて終了します。
 
 `.claude/settings.local.json`（gitignore 済み・個人用）に書く方法：
@@ -26,6 +31,45 @@ Claude Code と Obsidian vault をつなぐ仕組みです。2 つの部分か�
 export OBSIDIAN_VAULT="$HOME/Documents/MyVault"
 ```
 
+### Local REST API 経由（MCP）
+
+[Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) プラグインを入れて
+API キーを発行し、環境変数に設定します。キーは秘密情報なのでコミットしないでください
+（`.claude/settings.local.json` は gitignore 済みです）。
+
+```json
+{
+  "env": {
+    "OBSIDIAN_VAULT": "~/Documents/MyVault",
+    "OBSIDIAN_API_KEY": "（プラグインが発行したキー）"
+  }
+}
+```
+
+`.mcp.json` にサーバーを登録済みなので、キーを設定すれば `mcp__obsidian__*` ツールが使えます。
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "type": "http",
+      "url": "https://127.0.0.1:27124/mcp/",
+      "headers": { "Authorization": "Bearer ${OBSIDIAN_API_KEY}" }
+    }
+  }
+}
+```
+
+**証明書について** — プラグインの HTTPS は自己署名証明書です。MCP 接続が証明書エラーで
+失敗する場合は、次のどちらかにしてください。
+
+- プラグイン設定で非暗号化 HTTP（既定 27123 番）を有効にし、URL を
+  `http://127.0.0.1:27123/mcp/` に変える
+- プラグインからエクスポートした証明書を `NODE_EXTRA_CA_CERTS` に指定する
+
+CLI（`.claude/tools/obsidian.mjs`）も `OBSIDIAN_API_KEY` があれば REST API 経由で動きます
+（`links` と `tags` は vault 全体の走査が要るため、常にファイル直読みです）。
+
 ### 任意の環境変数
 
 | 変数 | 既定値 | 説明 |
@@ -34,6 +78,8 @@ export OBSIDIAN_VAULT="$HOME/Documents/MyVault"
 | `OBSIDIAN_LOG_MAX_CHARS` | `8000` | ログ 1 発言あたりの最大文字数 |
 | `OBSIDIAN_DAILY_FOLDER` | vault 直下 | デイリーノートのフォルダ |
 | `OBSIDIAN_READ_MAX` | `40000` | `read` で表示する最大文字数 |
+| `OBSIDIAN_API_KEY` | なし | 設定すると CLI が REST API 経由になる |
+| `OBSIDIAN_API_URL` | `https://127.0.0.1:27124` | REST API の URL |
 
 ---
 
@@ -140,10 +186,21 @@ echo "本文" | node .claude/tools/obsidian.mjs daily --heading 作業ログ
 
 ---
 
+## vault の運用ルール
+
+`.claude/skills/obsidian/SKILL.md` に、Claude が vault を触るときの規約を書いています。
+
+- **外部に原本があるものは持ち込まない** — Google Docs / Spreadsheet / Notion / Backlog などの
+  内容をコピーせず、リンク付きカードだけ置く。外部リソースは memory に file ID と URL を記録する。
+- **確認なしに既存カードを削除しない**
+- **列名・ファイル名は変更しない**
+- **Done に移すときは `- [x]` にして完了日を追記**（例: `✅ 2026-05-21`）
+- **新しいカードは原則、最初の列の末尾に追加**
+
 ## 共通の注意
 
-- Claude Code on the web などクラウド実行のセッションは、手元の vault に触れません。
-  この仕組みはローカルで動かす Claude Code 向けです。
+- Claude Code on the web などクラウド実行のセッションは、手元の vault にも `127.0.0.1` にも
+  届きません。この仕組みはローカルで動かす Claude Code 向けです。
 - `node` が必要です（Claude Code と同じ環境に入っていれば十分）。
 - `.obsidian` や `.trash` などのフォルダは検索対象から外しています。
 
