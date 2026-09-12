@@ -18,6 +18,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { resolveVault } from './obsidian-vault.mjs';
+import { rank } from './obsidian-search.mjs';
 
 const SKIP_DIRS = new Set(['.obsidian', '.trash', '.git', '.smart-env', 'node_modules']);
 const READ_MAX = Number(process.env.OBSIDIAN_READ_MAX) || 40000;
@@ -152,6 +153,28 @@ const commands = {
     console.log(`${results.length} 件:\n${results.join('\n')}`);
   },
 
+  // 関連度順に探す。search と違い、複数の語がどれだけ一致するかで順位を付ける。
+  recall(root, { flags, positional }) {
+    const text = positional.join(' ').trim();
+    if (!text) die('探したい内容を書いてください。');
+
+    const exclude = flags.all ? [] : [process.env.OBSIDIAN_CLAUDE_FOLDER || 'Claude'];
+    const { terms, results } = rank(root, text, {
+      exclude,
+      limit: Number(flags.limit) || 5,
+      excerptsPerNote: 3,
+    });
+
+    if (!terms.length) return console.log('手がかりになる語が見つかりませんでした。');
+    if (!results.length) return console.log(`該当なし（探した語: ${terms.join(' / ')}）`);
+
+    console.log(`${results.length} 件（探した語: ${terms.join(' / ')}）:`);
+    for (const note of results) {
+      console.log(`\n  ${note.rel}  [一致: ${note.matched.join(' ')}]`);
+      for (const excerpt of note.excerpts) console.log(`    ${excerpt}`);
+    }
+  },
+
   // ノートを読む。
   read(root, { positional }) {
     const note = resolveNote(root, positional[0]);
@@ -251,6 +274,8 @@ const META_COMMANDS = new Set(['doctor', 'setup', 'install', 'uninstall']);
 if (!command || command === 'help' || (!commands[command] && !META_COMMANDS.has(command))) {
   console.log(`使い方: node .claude/tools/obsidian.mjs <コマンド>
 
+  recall <文章> [--limit n] [--all]    関連するノートを関連度順に探す
+                                       （--all で会話ログも対象に含める）
   search <語> [--tag t] [--limit n]   全文検索（該当行つき）
   read <ノート>                        ノートを読む
   list [パス接頭辞] [--limit n]        更新が新しい順に一覧
@@ -288,6 +313,7 @@ if (META_COMMANDS.has(command)) {
 }
 
 const REST_COMMANDS = new Set(['search', 'read', 'list', 'new', 'append', 'daily']);
+// recall は vault 全体の走査が要るので常にファイル直読み
 const STDIN_COMMANDS = new Set(['new', 'append', 'daily']);
 const args = args_;
 

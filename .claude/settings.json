@@ -23,6 +23,16 @@
             "statusMessage": "Obsidian に質問を記録中..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/obsidian-recall.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Obsidian から関連ノートを探しています..."
+          }
+        ]
       }
     ],
     "Stop": [
@@ -55,7 +65,8 @@
       "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" read:*)",
       "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" list:*)",
       "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" links:*)",
-      "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" tags:*)"
+      "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" tags:*)",
+      "Bash(node \"$CLAUDE_PROJECT_DIR/.claude/tools/obsidian.mjs\" recall:*)"
     ]
   },
   "enabledMcpjsonServers": [
