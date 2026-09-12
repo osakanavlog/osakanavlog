@@ -10,7 +10,10 @@
 import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 
-const BASE = process.env.OBSIDIAN_API_URL || 'https://127.0.0.1:27124';
+// プラグインの既定ポート。HTTPS が先、繋がらなければ非暗号化 HTTP を試す。
+export const DEFAULT_ENDPOINTS = ['https://127.0.0.1:27124', 'http://127.0.0.1:27123'];
+
+const BASE = process.env.OBSIDIAN_API_URL || DEFAULT_ENDPOINTS[0];
 
 function fail(message) {
   const error = new Error(message);
@@ -58,6 +61,64 @@ async function expectOk(res, context) {
   if (res.status === 404) return null;
   if (res.status >= 400) fail(`${context} に失敗しました（HTTP ${res.status}）: ${res.text.slice(0, 200)}`);
   return res;
+}
+
+
+const CERT_ERRORS = new Set([
+  'DEPTH_ZERO_SELF_SIGNED_CERT',
+  'SELF_SIGNED_CERT_IN_CHAIN',
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+  'ERR_TLS_CERT_ALTNAME_INVALID',
+]);
+
+// 1 つのエンドポイントに繋がるか調べる。証明書の検証を通るかも併せて返す。
+export function probe(endpoint, key) {
+  const url = new URL('/', endpoint);
+  const isHttps = url.protocol === 'https:';
+
+  const attempt = (rejectUnauthorized) => new Promise((resolve) => {
+    const options = {
+      method: 'GET',
+      hostname: url.hostname,
+      port: url.port || (isHttps ? 443 : 80),
+      path: '/',
+      timeout: 3000,
+      headers: { Authorization: `Bearer ${key || ''}`, Accept: 'application/json' },
+      ...(isHttps ? { rejectUnauthorized } : {}),
+    };
+    const req = (isHttps ? httpsRequest : httpRequest)(options, (res) => {
+      res.resume();
+      resolve({ status: res.statusCode });
+    });
+    req.on('timeout', () => { req.destroy(); resolve({ error: 'timeout', code: 'ETIMEDOUT' }); });
+    req.on('error', (err) => resolve({ error: err.message, code: err.code }));
+    req.end();
+  });
+
+  return (async () => {
+    const strict = await attempt(true);
+    if (strict.status) return { endpoint, reachable: true, status: strict.status, certTrusted: true };
+
+    // 証明書の問題なら、検証を外して再確認（プラグインの既定は自己署名）
+    if (isHttps && CERT_ERRORS.has(strict.code)) {
+      const loose = await attempt(false);
+      if (loose.status) return { endpoint, reachable: true, status: loose.status, certTrusted: false };
+      return { endpoint, reachable: false, code: loose.code, error: loose.error };
+    }
+    return { endpoint, reachable: false, code: strict.code, error: strict.error };
+  })();
+}
+
+// 繋がるエンドポイントを探す。OBSIDIAN_API_URL があればそれだけを見る。
+export async function detectEndpoint(key) {
+  const candidates = process.env.OBSIDIAN_API_URL ? [process.env.OBSIDIAN_API_URL] : DEFAULT_ENDPOINTS;
+  const tried = [];
+  for (const candidate of candidates) {
+    const result = await probe(candidate, key);
+    tried.push(result);
+    if (result.reachable) return { ...result, tried };
+  }
+  return { reachable: false, tried };
 }
 
 const encodePath = (p) => p.split('/').filter(Boolean).map(encodeURIComponent).join('/');

@@ -11,8 +11,12 @@
 
 ## Obsidian 連携
 
-Claude Code と Obsidian vault をつないでいます。`OBSIDIAN_VAULT` に vault のパスを
-設定すると有効になります。
+Claude Code と Obsidian vault をつないでいます。設定は 1 コマンドです。
+
+```bash
+node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
+node .claude/tools/obsidian.mjs doctor    # 点検
+```
 
 - **自動記録** — チャットの内容がセッションごとのノートに書き残される
 - **読み書き** — Claude が vault を検索して答え、頼めばノートを作成・追記する

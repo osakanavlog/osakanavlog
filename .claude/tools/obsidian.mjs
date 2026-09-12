@@ -245,7 +245,8 @@ const commands = {
 };
 
 const [command, ...argv] = process.argv.slice(2);
-if (!command || command === 'help' || !commands[command]) {
+const META_COMMANDS = new Set(['doctor', 'setup']);
+if (!command || command === 'help' || (!commands[command] && !META_COMMANDS.has(command))) {
   console.log(`使い方: node .claude/tools/obsidian.mjs <コマンド>
 
   search <語> [--tag t] [--limit n]   全文検索（該当行つき）
@@ -258,6 +259,10 @@ if (!command || command === 'help' || !commands[command]) {
   links <ノート>                       発リンクと被リンク
   tags [--limit n]                     タグ一覧
 
+  doctor                               設定と接続を点検して直し方を出す
+  setup --vault <パス>                 繋がる接続先を探して設定を書く
+                                       （API キーは標準入力か OBSIDIAN_API_KEY から）
+
 OBSIDIAN_VAULT に vault のパスが必要です。OBSIDIAN_API_KEY も設定すると
 Local REST API 経由になります（links / tags は常にファイル直読み）。`);
   process.exit(command && command !== 'help' ? 1 : 0);
@@ -265,9 +270,17 @@ Local REST API 経由になります（links / tags は常にファイル直読�
 
 // OBSIDIAN_API_KEY があれば Local REST API 経由（Obsidian 起動中の vault を直接操作）。
 // links / tags は vault 全体の走査が要るので、常にファイルを直接読む。
+const args_ = parseArgs(argv);
+if (META_COMMANDS.has(command)) {
+  const setupModule = await import('./obsidian-setup.mjs');
+  if (command === 'doctor') process.exit((await setupModule.doctor()) > 0 ? 1 : 0);
+  await setupModule.setup(args_, readStdin());
+  process.exit(0);
+}
+
 const REST_COMMANDS = new Set(['search', 'read', 'list', 'new', 'append', 'daily']);
 const STDIN_COMMANDS = new Set(['new', 'append', 'daily']);
-const args = parseArgs(argv);
+const args = args_;
 
 if (process.env.OBSIDIAN_API_KEY && REST_COMMANDS.has(command)) {
   const { rest } = await import('./obsidian-rest.mjs');

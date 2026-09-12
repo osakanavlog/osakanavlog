@@ -10,81 +10,90 @@ Claude Code と Obsidian vault をつなぐ仕組みです。2 つの部分か�
 
 ## 設定
 
-### ファイル直読み
+### 1 コマンドで設定する
 
-`OBSIDIAN_VAULT` に vault のルートパスを渡すだけです。
-未設定なら自動記録は何もせず、読み書きツールはパスが必要だと答えて終了します。
-
-`.claude/settings.local.json`（gitignore 済み・個人用）に書く方法：
-
-```json
-{
-  "env": {
-    "OBSIDIAN_VAULT": "~/Documents/MyVault"
-  }
-}
-```
-
-反映されない場合は、シェルの環境変数として渡してください。
+vault のパスを渡すだけです。Local REST API プラグインの API キーがあれば標準入力から渡します
+（コマンドライン引数では受け取りません。シェル履歴に残るためです）。
 
 ```bash
-export OBSIDIAN_VAULT="$HOME/Documents/MyVault"
+# プラグインを使う場合（Obsidian を起動しておく）
+read -rs OBSIDIAN_API_KEY && export OBSIDIAN_API_KEY
+echo "$OBSIDIAN_API_KEY" | node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
+
+# プラグインを使わない場合
+node .claude/tools/obsidian.mjs setup --vault ~/Documents/MyVault
 ```
 
-### Local REST API 経由（MCP）
+setup がやること:
 
-[Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) プラグインを入れて
-API キーを発行し、環境変数に設定します。キーは秘密情報なのでコミットしないでください
-（`.claude/settings.local.json` は gitignore 済みです）。
+1. 繋がる接続先を探す（HTTPS 27124 → HTTP 27123 の順）
+2. **MCP が確実に通る方を選ぶ** — HTTPS の証明書が自己署名なら HTTP を優先する
+3. `.mcp.json` の url を選んだ接続先に更新する
+4. `.claude/settings.local.json`（git 管理外）に環境変数を保存する
+5. 点検結果を表示する
+
+API キーが保存されるのは `.claude/settings.local.json` だけです。`.mcp.json` には
+`${OBSIDIAN_API_KEY}` の形で参照が入るので、リポジトリにキーは入りません。
+キーが拒否された場合は保存しません。
+
+### 点検する
+
+```bash
+node .claude/tools/obsidian.mjs doctor
+```
+
+```
+✓ vault      /Users/me/Documents/MyVault（ノート 312 件）
+✓ APIキー    設定済み（末尾 ee86）
+✓ 接続       http://127.0.0.1:27123（HTTP 200）
+✓ MCP設定    http://127.0.0.1:27123/mcp/
+✓ 自動記録   フック 4 件を登録済み
+✓ ローカル設定 settings.local.json に env を保存済み
+
+問題ありません。
+```
+
+問題があれば、その行と直し方が出ます。うまく動かないときは最初にこれを実行してください。
+問題が 1 件以上あると終了コードは 1 になります。
+
+### 手で設定する
+
+`.claude/settings.local.json` に直接書いても同じです。
 
 ```json
 {
   "env": {
     "OBSIDIAN_VAULT": "~/Documents/MyVault",
-    "OBSIDIAN_API_KEY": "（プラグインが発行したキー）"
+    "OBSIDIAN_API_KEY": "（プラグインが発行したキー）",
+    "OBSIDIAN_API_URL": "http://127.0.0.1:27123"
   }
 }
 ```
 
-`.mcp.json` にサーバーを登録済みなので、キーを設定すれば `mcp__obsidian__*` ツールが使えます。
+`OBSIDIAN_API_KEY` を設定しなければ、vault のファイルを直接読み書きする動作になります
+（Obsidian が閉じていても動きます）。
 
-```json
-{
-  "mcpServers": {
-    "obsidian": {
-      "type": "http",
-      "url": "https://127.0.0.1:27124/mcp/",
-      "headers": { "Authorization": "Bearer ${OBSIDIAN_API_KEY}" }
-    }
-  }
-}
-```
+### `claude mcp add` について
 
-接続できているかは `claude mcp list` で確認します。`OBSIDIAN_API_KEY` が未設定のときは
-「変数が見つからない」旨の警告が出て、`${OBSIDIAN_API_KEY}` が展開されないまま使われます。
-
-**`claude mcp add` は不要です。** このリポジトリでは `.mcp.json` が登録を済ませています。
-全プロジェクトで使いたい場合だけ user スコープで追加してください。
+このリポジトリでは不要です。`.mcp.json` が登録を済ませており、そちらは `${VAR}` 展開が
+効くのでキーが設定ファイルに残りません。全プロジェクトで使いたい場合だけ user スコープで
+追加してください。
 
 ```bash
-claude mcp add --transport http obsidian https://127.0.0.1:27124/mcp/ \
-  -s user \
-  --header "Authorization: Bearer $OBSIDIAN_API_KEY"
+claude mcp add --transport http obsidian http://127.0.0.1:27123/mcp/ \
+  -s user --header "Authorization: Bearer $OBSIDIAN_API_KEY"
 ```
 
-`${VAR}` 展開が効くのは `.mcp.json`（project スコープ）だけなので、local / user スコープで
-追加するとキーが `~/.claude.json` に平文で保存されます。上のようにシェル展開で渡せば
-コマンド履歴には残りませんが、設定ファイルには平文で入ります。
+`${VAR}` 展開が効くのは `.mcp.json`（project スコープ）だけなので、local / user スコープでは
+キーが `~/.claude.json` に平文で保存されます。
 
-**証明書について** — プラグインの HTTPS は自己署名証明書です。MCP 接続が証明書エラーで
-失敗する場合は、次のどちらかにしてください。
+### 証明書について
 
-- プラグイン設定で非暗号化 HTTP（既定 27123 番）を有効にし、URL を
-  `http://127.0.0.1:27123/mcp/` に変える
-- プラグインからエクスポートした証明書を `NODE_EXTRA_CA_CERTS` に指定する
+プラグインの HTTPS は自己署名証明書です。MCP クライアントが拒否する可能性があるため、
+setup は HTTP ポートが使えるならそちらを選びます。HTTPS しか使えない環境では、
+プラグインからエクスポートした証明書を `NODE_EXTRA_CA_CERTS` に指定してください。
 
-CLI（`.claude/tools/obsidian.mjs`）も `OBSIDIAN_API_KEY` があれば REST API 経由で動きます
-（`links` と `tags` は vault 全体の走査が要るため、常にファイル直読みです）。
+接続できているかは `claude mcp list` でも確認できます。
 
 ### 任意の環境変数
 
