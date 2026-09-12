@@ -60,7 +60,7 @@ function noteFor(dir, sessionId, now) {
       '---',
       `created: ${s.date} ${s.time}`,
       `session_id: ${sessionId || 'unknown'}`,
-      `project: ${project}`,
+      `project: ${JSON.stringify(project)}`, // ディレクトリ名に : や " が入っても YAML が壊れないように
       'tags:',
       '  - claude-code',
       '---',
@@ -90,7 +90,15 @@ function lastAssistantText(transcriptPath) {
       continue;
     }
     if (entry.isSidechain) continue; // サブエージェントの会話は記録しない
-    if (entry.type === 'user') break;
+
+    // ツールの実行結果も type:"user" で記録される。これはターンの区切りではないので、
+    // 実際のユーザー発言だけで遡上を止める（止めないと本文の前半が欠ける）。
+    if (entry.type === 'user') {
+      const content = entry.message?.content;
+      const isToolResult = Array.isArray(content) && content.some((b) => b?.type === 'tool_result');
+      if (!isToolResult) break;
+      continue;
+    }
     if (entry.type !== 'assistant') continue;
 
     const content = entry.message?.content;
