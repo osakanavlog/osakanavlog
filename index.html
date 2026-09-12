@@ -29,25 +29,37 @@
 
     <section id="latest" class="videos">
       <h2>最新の動画</h2>
+      <!-- このリストは vault/videos/*.md から自動生成されます。手で編集せず `npm run build` を実行してください。 -->
       <ul class="video-list">
+        <!-- build:videos:start -->
         <li class="video-card">
-          <div class="thumbnail" aria-hidden="true"></div>
-          <h3>はじめての水槽づくり</h3>
-          <p class="video-date">2026年7月1日</p>
+          <a class="video-card-link" href="videos/%E3%81%AF%E3%81%98%E3%82%81%E3%81%A6%E3%81%AE%E6%B0%B4%E6%A7%BD%E3%81%A5%E3%81%8F%E3%82%8A.html">
+            <div class="thumbnail" aria-hidden="true"></div>
+            <h3>はじめての水槽づくり</h3>
+          </a>
+          <p class="video-date"><time datetime="2026-07-01">2026年7月1日</time></p>
           <p>初心者向けに、水槽の立ち上げ手順をやさしく紹介します。</p>
+          <ul class="tag-list"><li>#飼育</li><li>#初心者向け</li></ul>
         </li>
         <li class="video-card">
-          <div class="thumbnail" aria-hidden="true"></div>
-          <h3>旬のあじをさばく</h3>
-          <p class="video-date">2026年6月20日</p>
+          <a class="video-card-link" href="videos/%E6%97%AC%E3%81%AE%E3%81%82%E3%81%98%E3%82%92%E3%81%95%E3%81%B0%E3%81%8F.html">
+            <div class="thumbnail" aria-hidden="true"></div>
+            <h3>旬のあじをさばく</h3>
+          </a>
+          <p class="video-date"><time datetime="2026-06-20">2026年6月20日</time></p>
           <p>三枚おろしのコツと、簡単なアレンジレシピをご紹介。</p>
+          <ul class="tag-list"><li>#料理</li></ul>
         </li>
         <li class="video-card">
-          <div class="thumbnail" aria-hidden="true"></div>
-          <h3>近所の川で魚さがし</h3>
-          <p class="video-date">2026年6月5日</p>
+          <a class="video-card-link" href="videos/%E8%BF%91%E6%89%80%E3%81%AE%E5%B7%9D%E3%81%A7%E9%AD%9A%E3%81%95%E3%81%8C%E3%81%97.html">
+            <div class="thumbnail" aria-hidden="true"></div>
+            <h3>近所の川で魚さがし</h3>
+          </a>
+          <p class="video-date"><time datetime="2026-06-05">2026年6月5日</time></p>
           <p>身近な自然で出会えるおさかなを観察してきました。</p>
+          <ul class="tag-list"><li>#観察</li><li>#おでかけ</li></ul>
         </li>
+<!-- build:videos:end -->
       </ul>
     </section>
 

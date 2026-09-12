@@ -1,0 +1,11 @@
+{
+  "name": "osakanavlog",
+  "version": "1.0.0",
+  "description": "おさかなvlog — Obsidian の vault からサイトを生成する静的サイト",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs"
+  },
+  "license": "MIT"
+}
