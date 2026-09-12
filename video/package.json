@@ -1,0 +1,29 @@
+{
+  "name": "intemize-pr-video",
+  "version": "1.0.0",
+  "description": "インテマイズ PR動画（Remotion）",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render IntemizePR out/intemize-pr.mp4",
+    "preview": "remotion render IntemizePR out/preview.mp4 --scale=0.5",
+    "still": "remotion still IntemizePR out/thumbnail.png --frame=90",
+    "compositions": "remotion compositions",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@remotion/cli": "^4.0.523",
+    "@remotion/transitions": "^4.0.523",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.523"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}
