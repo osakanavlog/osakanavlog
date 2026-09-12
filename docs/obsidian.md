@@ -60,6 +60,22 @@ API キーを発行し、環境変数に設定します。キーは秘密情報�
 }
 ```
 
+接続できているかは `claude mcp list` で確認します。`OBSIDIAN_API_KEY` が未設定のときは
+「変数が見つからない」旨の警告が出て、`${OBSIDIAN_API_KEY}` が展開されないまま使われます。
+
+**`claude mcp add` は不要です。** このリポジトリでは `.mcp.json` が登録を済ませています。
+全プロジェクトで使いたい場合だけ user スコープで追加してください。
+
+```bash
+claude mcp add --transport http obsidian https://127.0.0.1:27124/mcp/ \
+  -s user \
+  --header "Authorization: Bearer $OBSIDIAN_API_KEY"
+```
+
+`${VAR}` 展開が効くのは `.mcp.json`（project スコープ）だけなので、local / user スコープで
+追加するとキーが `~/.claude.json` に平文で保存されます。上のようにシェル展開で渡せば
+コマンド履歴には残りませんが、設定ファイルには平文で入ります。
+
 **証明書について** — プラグインの HTTPS は自己署名証明書です。MCP 接続が証明書エラーで
 失敗する場合は、次のどちらかにしてください。
 
