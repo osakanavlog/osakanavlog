@@ -15,9 +15,11 @@ export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) 
       </div>
 
       <div style={{flex: 1, marginTop: 24}}>
-        {about.facts.map((f, i) => (
-          <FactRow key={f.label} label={f.label} value={f.value} delay={170 + i * 55} />
-        ))}
+        {about.facts
+          .filter((f) => f.value.trim().length > 0)
+          .map((f, i) => (
+            <FactRow key={f.label} label={f.label} value={f.value} delay={170 + i * 55} />
+          ))}
       </div>
     </div>
   </SceneLayout>
@@ -25,7 +27,6 @@ export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) 
 
 const FactRow: React.FC<{label: string; value: string; delay: number}> = ({label, value, delay}) => {
   const enter = useEnter(delay);
-  const filled = value.trim().length > 0;
 
   return (
     <div
@@ -55,11 +56,11 @@ const FactRow: React.FC<{label: string; value: string; delay: number}> = ({label
         style={{
           fontSize: fontSize.body,
           lineHeight: 1.6,
-          color: filled ? colors.onDark : colors.onDarkMuted,
-          fontStyle: filled ? 'normal' : 'italic',
+          color: colors.onDark,
+          whiteSpace: 'pre-line',
         }}
       >
-        {filled ? value : '—（未入力）'}
+        {value}
       </div>
     </div>
   );

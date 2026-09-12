@@ -5,24 +5,24 @@
 export {fontFamily} from './font';
 
 export const colors = {
-  /** 基調色（深い藍 — 三次の夜明け前の空） */
-  base: '#07202C',
-  baseDeep: '#04141C',
+  /** 基調色（濃い木の色） */
+  base: '#2B2320',
+  baseDeep: '#191311',
   /** 面の色 */
-  surface: 'rgba(255, 255, 255, 0.06)',
-  surfaceSolid: '#0E3446',
-  /** 明るい背景のシーン用 */
-  light: '#F2F8FA',
+  surface: 'rgba(255, 255, 255, 0.07)',
+  surfaceSolid: '#3A2F2A',
+  /** 明るい背景のシーン用（生成りのリネン） */
+  light: '#F7F1E8',
   lightSurface: '#FFFFFF',
-  /** アクセント（川の水色） */
-  accent: '#2FC6DE',
-  /** サブアクセント（中国山地の緑） */
-  accent2: '#8FD694',
+  /** アクセント（陽のあたる麻色） */
+  accent: '#E0A25A',
+  /** サブアクセント（くすんだ緑） */
+  accent2: '#9CB49B',
   /** 文字色 */
-  onDark: '#ECF6FA',
-  onDarkMuted: '#8FB2C0',
-  onLight: '#0B2A38',
-  onLightMuted: '#55747F',
+  onDark: '#F6EFE6',
+  onDarkMuted: '#BBA895',
+  onLight: '#2B2320',
+  onLightMuted: '#7B6A5B',
 } as const;
 
 export const fontSize = {

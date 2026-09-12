@@ -34,7 +34,8 @@ export const Services: React.FC<{durationInFrames: number}> = ({durationInFrames
                 flex: 1,
                 transform: `scale(${1 + weight * 0.04})`,
                 filter: `saturate(${0.55 + weight * 0.45}) brightness(${0.74 + weight * 0.26})`,
-                outline: `2px solid rgba(47,198,222,${frame < focusStart ? 0 : weight * 0.9})`,
+                outline: `2px solid ${colors.accent}`,
+                outlineColor: `rgba(224,162,90,${frame < focusStart ? 0 : weight * 0.9})`,
                 outlineOffset: 6,
                 borderRadius: 22,
                 opacity: interpolate(frame, [110 + i * 24, 145 + i * 24], [0, 1], {

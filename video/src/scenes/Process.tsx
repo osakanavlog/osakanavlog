@@ -73,7 +73,7 @@ const Step: React.FC<{no: string; title: string; text: string; delay: number}> =
           height: 54,
           borderRadius: '50%',
           background: colors.accent,
-          color: colors.baseDeep,
+          color: '#2B2320',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

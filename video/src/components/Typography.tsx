@@ -86,7 +86,7 @@ export const Lead: React.FC<{children: React.ReactNode; delay?: number; size?: n
     <p
       style={{
         margin: '28px 0 0',
-        maxWidth: 1180,
+        maxWidth: 1480,
         fontSize: size,
         lineHeight: 1.85,
         fontWeight: 400,

@@ -20,21 +20,21 @@ const navy = (angle: number, glow: string) =>
  * 尺を変える場合は durationInFrames を調整してください（合計が動画の長さになります）。
  */
 export const SCENES: SceneDef[] = [
-  {id: 'opening', chapter: 'OPENING', durationInFrames: 360, tone: 'dark', background: navy(50, 'rgba(47,198,222,0.28)')},
-  {id: 'region', chapter: '三次から', durationInFrames: 600, tone: 'dark', background: navy(18, 'rgba(143,214,148,0.22)')},
-  {id: 'about', chapter: '私たちについて', durationInFrames: 690, tone: 'dark', background: navy(82, 'rgba(47,198,222,0.20)')},
-  {id: 'services', chapter: '事業内容', durationInFrames: 750, tone: 'dark', background: navy(50, 'rgba(47,198,222,0.16)')},
-  {id: 'process', chapter: '仕事の進め方', durationInFrames: 750, tone: 'dark', background: navy(15, 'rgba(47,198,222,0.18)')},
-  {id: 'strengths', chapter: '選ばれる理由', durationInFrames: 810, tone: 'dark', background: navy(85, 'rgba(143,214,148,0.20)')},
+  {id: 'opening', chapter: 'OPENING', durationInFrames: 360, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.30)')},
+  {id: 'region', chapter: '対応エリア', durationInFrames: 600, tone: 'dark', background: navy(18, 'rgba(156,180,155,0.24)')},
+  {id: 'about', chapter: '私たちについて', durationInFrames: 690, tone: 'dark', background: navy(82, 'rgba(224,162,90,0.20)')},
+  {id: 'services', chapter: '事業内容', durationInFrames: 750, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.17)')},
+  {id: 'process', chapter: '仕事の進め方', durationInFrames: 750, tone: 'dark', background: navy(15, 'rgba(224,162,90,0.19)')},
+  {id: 'strengths', chapter: '選ばれる理由', durationInFrames: 810, tone: 'dark', background: navy(85, 'rgba(156,180,155,0.22)')},
   {
     id: 'numbers',
     chapter: '数字で見る',
     durationInFrames: 600,
     tone: 'light',
-    background: `radial-gradient(110% 80% at 70% 0%, #FFFFFF 0%, rgba(255,255,255,0) 55%), linear-gradient(170deg, ${colors.light} 0%, #DCEBF1 100%)`,
+    background: `radial-gradient(110% 80% at 70% 0%, #FFFFFF 0%, rgba(255,255,255,0) 55%), linear-gradient(170deg, ${colors.light} 0%, #E8DCCA 100%)`,
   },
-  {id: 'voices', chapter: 'はたらく人', durationInFrames: 540, tone: 'dark', background: navy(30, 'rgba(47,198,222,0.18)')},
-  {id: 'closing', chapter: 'CLOSING', durationInFrames: 300, tone: 'dark', background: navy(50, 'rgba(47,198,222,0.34)')},
+  {id: 'fields', chapter: '手がけるところ', durationInFrames: 540, tone: 'dark', background: navy(30, 'rgba(224,162,90,0.19)')},
+  {id: 'closing', chapter: 'CLOSING', durationInFrames: 300, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.36)')},
 ];
 
 export type PlacedScene = SceneDef & {from: number; to: number};
