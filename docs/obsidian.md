@@ -25,6 +25,28 @@ vault の場所は自動で見つけます。優先順位は次のとおりで�
 vault が複数ある場合は上の順で 1 つ選び、`doctor` が他の候補も表示します。
 別の vault を使いたいときだけ `OBSIDIAN_VAULT` で指定してください。
 
+### 全プロジェクトで記録する
+
+`.claude/settings.json` のフックは**このリポジトリで作業したときだけ**動きます。
+他のプロジェクトでの会話も記録したい場合は、ユーザー設定に登録します。
+
+```bash
+node .claude/tools/obsidian.mjs install     # 登録
+node .claude/tools/obsidian.mjs uninstall   # 解除
+```
+
+install がやること:
+
+- フック本体を `~/.claude/obsidian/` に複製する
+  （このリポジトリを移動・削除しても動き続けます）
+- `~/.claude/settings.json` にフックを登録する
+  （既にある他のフックや設定はそのまま残します）
+
+反映には Claude Code の再起動が必要です。uninstall は自分が登録したフックだけを消し、
+他のフックと記録済みのノートは残します。
+
+プロジェクト設定とユーザー設定の両方に登録されていても、同じ内容は二重に記録されません。
+
 ### プラグインも使う場合
 
 Local REST API プラグイン経由（MCP）にするときだけ、setup を実行します。

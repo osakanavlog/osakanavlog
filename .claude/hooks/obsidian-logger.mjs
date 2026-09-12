@@ -134,7 +134,15 @@ try {
   const s = stamp(now);
   const dir = join(vault, process.env.OBSIDIAN_CLAUDE_FOLDER || 'Claude');
   const note = noteFor(dir, payload.session_id, now);
-  const append = (body) => appendFileSync(note, body, 'utf8');
+
+  // プロジェクト設定とユーザー設定の両方にフックが登録されていると、
+  // 同じ内容が2回渡ってくる。直前に同じブロックを書いていれば書かない。
+  const append = (body) => {
+    try {
+      if (readFileSync(note, 'utf8').trimEnd().endsWith(body.trimEnd())) return;
+    } catch { /* 読めなければそのまま書く */ }
+    appendFileSync(note, body, 'utf8');
+  };
 
   if (event === 'UserPromptSubmit') {
     const prompt = String(payload.prompt || '').trim();
