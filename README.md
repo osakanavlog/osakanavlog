@@ -11,7 +11,10 @@
 
 ## Obsidian 連携
 
-Claude Code とのチャット内容を Obsidian vault に Markdown として自動記録できます。
-`OBSIDIAN_VAULT` に vault のパスを設定すると有効になります。
+Claude Code と Obsidian vault をつないでいます。`OBSIDIAN_VAULT` に vault のパスを
+設定すると有効になります。
 
-詳しくは [docs/obsidian-log.md](docs/obsidian-log.md) を参照してください。
+- **自動記録** — チャットの内容がセッションごとのノートに書き残される
+- **読み書き** — Claude が vault を検索して答え、頼めばノートを作成・追記する
+
+詳しくは [docs/obsidian.md](docs/obsidian.md) を参照してください。
