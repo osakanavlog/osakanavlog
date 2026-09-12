@@ -1,6 +1,6 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
-import {services} from '../content';
+import {useContent} from '../ContentContext';
 import {colors} from '../theme';
 import {SceneLayout} from '../components/SceneLayout';
 import {Heading, Kicker} from '../components/Typography';
@@ -11,6 +11,7 @@ import {Card} from '../components/Card';
  * 25 秒間ずっと同じ絵にならないようにするための仕掛け。
  */
 export const Services: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {services} = useContent();
   const frame = useCurrentFrame();
   const focusStart = 250;
   const per = (durationInFrames - focusStart - 40) / services.items.length;

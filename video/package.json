@@ -1,12 +1,14 @@
 {
-  "name": "intema-pr-video",
+  "name": "intemize-pr-video",
   "version": "1.0.0",
-  "description": "インテリアマツヤマ（インテマ）PR動画（Remotion）",
+  "description": "株式会社インテマイズ PR動画（BtoC / BtoB）",
   "scripts": {
     "studio": "remotion studio",
-    "render": "remotion render IntemaPR out/intema-pr.mp4",
-    "preview": "remotion render IntemaPR out/preview.mp4 --scale=0.5",
-    "still": "remotion still IntemaPR out/thumbnail.png --frame=90",
+    "render": "npm run render:btoc && npm run render:btob",
+    "render:btoc": "remotion render PR-BtoC out/intemize-pr-btoc.mp4",
+    "render:btob": "remotion render PR-BtoB out/intemize-pr-btob.mp4",
+    "preview": "remotion render PR-BtoC out/preview.mp4 --scale=0.5",
+    "still": "remotion still PR-BtoC out/thumbnail.png --frame=120",
     "bgm": "node tools/make-bgm.mjs",
     "compositions": "remotion compositions",
     "typecheck": "tsc --noEmit"

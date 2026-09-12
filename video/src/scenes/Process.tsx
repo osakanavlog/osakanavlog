@@ -1,6 +1,6 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
-import {process as processContent} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter} from '../components/anim';
 import {SceneLayout} from '../components/SceneLayout';
@@ -8,6 +8,7 @@ import {Heading, Kicker, Lead} from '../components/Typography';
 
 /** 4 ステップを、線が伸びるのに合わせて順に出す */
 export const Process: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {process: processContent} = useContent();
   const frame = useCurrentFrame();
   const steps = processContent.steps;
   const start = 170;

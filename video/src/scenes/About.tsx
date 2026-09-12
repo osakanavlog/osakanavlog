@@ -1,11 +1,15 @@
 import React from 'react';
-import {about} from '../content';
+import {facts} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter} from '../components/anim';
 import {SceneLayout} from '../components/SceneLayout';
 import {Heading, Kicker, Lead} from '../components/Typography';
 
-export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) => (
+export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {about} = useContent();
+
+  return (
   <SceneLayout durationInFrames={durationInFrames}>
     <div style={{display: 'flex', gap: 90, width: '100%', alignItems: 'flex-start'}}>
       <div style={{flex: 1.1}}>
@@ -15,7 +19,7 @@ export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) 
       </div>
 
       <div style={{flex: 1, marginTop: 24}}>
-        {about.facts
+        {facts
           .filter((f) => f.value.trim().length > 0)
           .map((f, i) => (
             <FactRow key={f.label} label={f.label} value={f.value} delay={170 + i * 55} />
@@ -23,7 +27,8 @@ export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) 
       </div>
     </div>
   </SceneLayout>
-);
+  );
+};
 
 const FactRow: React.FC<{label: string; value: string; delay: number}> = ({label, value, delay}) => {
   const enter = useEnter(delay);

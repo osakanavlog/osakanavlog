@@ -46,6 +46,7 @@ export const Card: React.FC<{
           fontWeight: 700,
           lineHeight: 1.35,
           color: isDark ? colors.onDark : colors.onLight,
+          whiteSpace: 'pre-line',
         }}
       >
         {title}

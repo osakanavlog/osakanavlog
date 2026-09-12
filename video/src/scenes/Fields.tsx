@@ -1,6 +1,6 @@
 import React from 'react';
 import {Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
-import {fields} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter} from '../components/anim';
 import {SceneLayout} from '../components/SceneLayout';
@@ -8,6 +8,7 @@ import {Heading, Kicker, Lead} from '../components/Typography';
 
 /** 手がける場所を 3 つ並べる。施工事例の写真を入れる場所でもある */
 export const Fields: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {fields} = useContent();
   const frame = useCurrentFrame();
 
   return (

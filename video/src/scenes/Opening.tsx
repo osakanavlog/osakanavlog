@@ -1,12 +1,14 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {company, opening} from '../content';
+import {company} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter} from '../components/anim';
 import {useSceneOpacity} from '../components/anim';
 import {Logo} from '../components/Logo';
 
 export const Opening: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {opening} = useContent();
   const frame = useCurrentFrame();
   const sceneOpacity = useSceneOpacity(durationInFrames, 10, 20);
 
@@ -26,6 +28,23 @@ export const Opening: React.FC<{durationInFrames: number}> = ({durationInFrames}
         transform: `scale(${zoom})`,
       }}
     >
+      <div
+        style={{
+          marginBottom: 40,
+          fontSize: 22,
+          letterSpacing: '0.34em',
+          fontWeight: 700,
+          color: colors.onDarkMuted,
+          opacity: interpolate(frame, [6, 30], [0, 1], {
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
+          }),
+          textIndent: '0.34em',
+        }}
+      >
+        {opening.kicker}
+      </div>
+
       <Logo size={180} delay={0} />
 
       <div
@@ -69,14 +88,26 @@ export const Opening: React.FC<{durationInFrames: number}> = ({durationInFrames}
           color: colors.onDark,
           opacity: taglineEnter,
           transform: riseUp(taglineEnter, 24),
+          whiteSpace: 'pre-line',
         }}
       >
-        {opening.lines.join('')}
+        {opening.lines.join('\n')}
+      </p>
+
+      <p
+        style={{
+          margin: '22px 0 0',
+          fontSize: fontSize.body,
+          color: colors.onDarkMuted,
+          opacity: cityEnter,
+        }}
+      >
+        {opening.tagline}
       </p>
 
       <div
         style={{
-          marginTop: 46,
+          marginTop: 40,
           display: 'flex',
           alignItems: 'center',
           gap: 16,

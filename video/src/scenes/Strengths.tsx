@@ -1,6 +1,6 @@
 import React from 'react';
 import {Sequence} from 'remotion';
-import {strengths} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter, useSceneOpacity} from '../components/anim';
 import {SceneLayout} from '../components/SceneLayout';
@@ -8,6 +8,7 @@ import {Heading, Kicker} from '../components/Typography';
 
 /** 強みは 1 つずつ大きく見せる。テロップ的に順送りする */
 export const Strengths: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {strengths} = useContent();
   const start = 70;
   const per = Math.floor((durationInFrames - start) / strengths.items.length);
 

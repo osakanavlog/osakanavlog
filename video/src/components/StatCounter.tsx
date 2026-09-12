@@ -60,7 +60,7 @@ export const StatCounter: React.FC<{
         ) : (
           <span
             style={{
-              fontSize: 118,
+              fontSize: 132,
               fontWeight: 900,
               lineHeight: 1,
               color: colors.onLight,

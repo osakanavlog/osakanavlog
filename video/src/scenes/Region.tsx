@@ -1,11 +1,14 @@
 import React from 'react';
-import {region} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter} from '../components/anim';
 import {SceneLayout} from '../components/SceneLayout';
 import {Heading, Kicker, Lead} from '../components/Typography';
 
-export const Region: React.FC<{durationInFrames: number}> = ({durationInFrames}) => (
+export const Region: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {region} = useContent();
+
+  return (
   <SceneLayout durationInFrames={durationInFrames}>
     <Kicker>{region.kicker}</Kicker>
     <Heading>{region.heading}</Heading>
@@ -17,7 +20,8 @@ export const Region: React.FC<{durationInFrames: number}> = ({durationInFrames})
       ))}
     </div>
   </SceneLayout>
-);
+  );
+};
 
 const Point: React.FC<{label: string; text: string; delay: number}> = ({label, text, delay}) => {
   const enter = useEnter(delay);

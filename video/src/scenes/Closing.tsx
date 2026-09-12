@@ -1,11 +1,13 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {closing, company} from '../content';
+import {company} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {riseUp, useEnter, useSceneOpacity} from '../components/anim';
 import {Logo} from '../components/Logo';
 
 export const Closing: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {closing} = useContent();
   const frame = useCurrentFrame();
   const opacity = useSceneOpacity(durationInFrames, 18, 26);
   const nameEnter = useEnter(26);

@@ -21,19 +21,20 @@ const navy = (angle: number, glow: string) =>
  */
 export const SCENES: SceneDef[] = [
   {id: 'opening', chapter: 'OPENING', durationInFrames: 360, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.30)')},
-  {id: 'region', chapter: '対応エリア', durationInFrames: 600, tone: 'dark', background: navy(18, 'rgba(156,180,155,0.24)')},
-  {id: 'about', chapter: '私たちについて', durationInFrames: 690, tone: 'dark', background: navy(82, 'rgba(224,162,90,0.20)')},
+  {id: 'region', chapter: '対応エリア', durationInFrames: 540, tone: 'dark', background: navy(18, 'rgba(156,180,155,0.24)')},
+  {id: 'about', chapter: '私たちについて', durationInFrames: 630, tone: 'dark', background: navy(82, 'rgba(224,162,90,0.20)')},
   {id: 'services', chapter: '事業内容', durationInFrames: 750, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.17)')},
-  {id: 'process', chapter: '仕事の進め方', durationInFrames: 750, tone: 'dark', background: navy(15, 'rgba(224,162,90,0.19)')},
-  {id: 'strengths', chapter: '選ばれる理由', durationInFrames: 810, tone: 'dark', background: navy(85, 'rgba(156,180,155,0.22)')},
+  {id: 'process', chapter: '仕事の進め方', durationInFrames: 690, tone: 'dark', background: navy(15, 'rgba(224,162,90,0.19)')},
+  {id: 'strengths', chapter: '選ばれる理由', durationInFrames: 750, tone: 'dark', background: navy(85, 'rgba(156,180,155,0.22)')},
   {
     id: 'numbers',
     chapter: '数字で見る',
-    durationInFrames: 600,
+    durationInFrames: 480,
     tone: 'light',
     background: `radial-gradient(110% 80% at 70% 0%, #FFFFFF 0%, rgba(255,255,255,0) 55%), linear-gradient(170deg, ${colors.light} 0%, #E8DCCA 100%)`,
   },
   {id: 'fields', chapter: '手がけるところ', durationInFrames: 540, tone: 'dark', background: navy(30, 'rgba(224,162,90,0.19)')},
+  {id: 'topics', chapter: 'ブログより', durationInFrames: 360, tone: 'dark', background: navy(65, 'rgba(156,180,155,0.20)')},
   {id: 'closing', chapter: 'CLOSING', durationInFrames: 300, tone: 'dark', background: navy(50, 'rgba(224,162,90,0.36)')},
 ];
 

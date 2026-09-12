@@ -1,5 +1,6 @@
 import React from 'react';
-import {numbers, draftMode} from '../content';
+import {draftMode} from '../content';
+import {useContent} from '../ContentContext';
 import {colors, fontSize} from '../theme';
 import {SceneLayout} from '../components/SceneLayout';
 import {Heading, Kicker} from '../components/Typography';
@@ -7,6 +8,7 @@ import {StatCounter} from '../components/StatCounter';
 import {useEnter} from '../components/anim';
 
 export const Numbers: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
+  const {numbers} = useContent();
   const noteEnter = useEnter(360);
   const hasPlaceholder = numbers.items.some((n) => n.value === null);
 
