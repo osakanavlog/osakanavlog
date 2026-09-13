@@ -17,13 +17,14 @@ const claudeDir = dirname(toolsDir); // <repo>/.claude
 const hooksDir = join(claudeDir, 'hooks');
 
 // 複製するフック本体（これ自体は import のパスだけ書き換える）
-const HOOK_SCRIPTS = ['obsidian-logger.mjs', 'obsidian-recall.mjs'];
+const HOOK_SCRIPTS = ['obsidian-logger.mjs', 'obsidian-recall.mjs', 'obsidian-resume.mjs'];
 // フックが読み込むモジュール（そのまま複製する）
 const MODULES = ['obsidian-vault.mjs', 'obsidian-search.mjs'];
 
 // どのイベントで何を呼ぶか。logger は引数でイベント名を受け取る。
 const REGISTRATIONS = [
   { event: 'SessionStart', script: 'obsidian-logger.mjs', arg: 'SessionStart' },
+  { event: 'SessionStart', script: 'obsidian-resume.mjs', arg: '' },
   { event: 'UserPromptSubmit', script: 'obsidian-logger.mjs', arg: 'UserPromptSubmit' },
   { event: 'UserPromptSubmit', script: 'obsidian-recall.mjs', arg: '' },
   { event: 'Stop', script: 'obsidian-logger.mjs', arg: 'Stop' },
@@ -88,7 +89,8 @@ export function install() {
   console.log(`登録: ${settingsPath()}`);
   console.log('  記録   SessionStart / UserPromptSubmit / Stop / SessionEnd');
   console.log('  呼び出し UserPromptSubmit');
-  console.log('\n全プロジェクトで、会話が記録され、関連するノートが会話に差し込まれます。');
+  console.log('  再開   SessionStart');
+  console.log('\n全プロジェクトで、会話が記録され、関連するノートと前回の続きが会話に差し込まれます。');
   console.log('反映には Claude Code の再起動が必要です。');
   console.log('解除するには uninstall を実行してください。');
 }
