@@ -11,7 +11,7 @@ export const Process: React.FC<{durationInFrames: number}> = ({durationInFrames}
   const {process: processContent} = useContent();
   const frame = useCurrentFrame();
   const steps = processContent.steps;
-  const start = 170;
+  const start = 140;
   const per = (durationInFrames - start - 90) / steps.length;
 
   const lineProgress = interpolate(frame, [start, start + per * steps.length], [0, 1], {

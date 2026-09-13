@@ -13,7 +13,7 @@ import {Card} from '../components/Card';
 export const Services: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
   const {services} = useContent();
   const frame = useCurrentFrame();
-  const focusStart = 250;
+  const focusStart = 210;
   const per = (durationInFrames - focusStart - 40) / services.items.length;
   /** 小数のフォーカス位置。カード間をなめらかに移動する */
   const focusPos = (frame - focusStart) / per - 0.5;
@@ -39,13 +39,13 @@ export const Services: React.FC<{durationInFrames: number}> = ({durationInFrames
                 outlineColor: `rgba(224,162,90,${frame < focusStart ? 0 : weight * 0.9})`,
                 outlineOffset: 6,
                 borderRadius: 22,
-                opacity: interpolate(frame, [110 + i * 24, 145 + i * 24], [0, 1], {
+                opacity: interpolate(frame, [95 + i * 22, 130 + i * 22], [0, 1], {
                   extrapolateLeft: 'clamp',
                   extrapolateRight: 'clamp',
                 }),
               }}
             >
-              <Card no={item.no} title={item.title} text={item.text} delay={110 + i * 24} />
+              <Card no={item.no} title={item.title} text={item.text} delay={95 + i * 22} />
             </div>
           );
         })}
@@ -57,7 +57,7 @@ export const Services: React.FC<{durationInFrames: number}> = ({durationInFrames
           fontSize: 24,
           letterSpacing: '0.1em',
           color: colors.onDarkMuted,
-          opacity: interpolate(frame, [200, 240], [0, 1], {
+          opacity: interpolate(frame, [170, 210], [0, 1], {
             extrapolateLeft: 'clamp',
             extrapolateRight: 'clamp',
           }),

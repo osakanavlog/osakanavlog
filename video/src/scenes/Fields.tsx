@@ -24,7 +24,7 @@ export const Fields: React.FC<{durationInFrames: number}> = ({durationInFrames})
             title={item.title}
             text={item.text}
             photo={fields.photos[i] ?? ''}
-            delay={130 + i * 46}
+            delay={110 + i * 40}
             /** じわっと寄る。3 枚が少しずつずれて動く */
             drift={interpolate(frame, [0, durationInFrames], [0, -10 - i * 4])}
           />

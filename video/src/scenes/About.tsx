@@ -22,7 +22,7 @@ export const About: React.FC<{durationInFrames: number}> = ({durationInFrames}) 
         {facts
           .filter((f) => f.value.trim().length > 0)
           .map((f, i) => (
-            <FactRow key={f.label} label={f.label} value={f.value} delay={170 + i * 55} />
+            <FactRow key={f.label} label={f.label} value={f.value} delay={140 + i * 42} />
           ))}
       </div>
     </div>

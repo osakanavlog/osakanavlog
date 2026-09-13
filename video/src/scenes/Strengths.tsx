@@ -9,7 +9,7 @@ import {Heading, Kicker} from '../components/Typography';
 /** 強みは 1 つずつ大きく見せる。テロップ的に順送りする */
 export const Strengths: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
   const {strengths} = useContent();
-  const start = 70;
+  const start = 60;
   const per = Math.floor((durationInFrames - start) / strengths.items.length);
 
   return (

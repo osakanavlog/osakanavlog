@@ -11,12 +11,12 @@
 import {writeFileSync} from 'node:fs';
 
 const SR = 44100;
-const DURATION = 180; // 動画と同じ3分
+const DURATION = 150; // 動画と同じ2分30秒
 const N = SR * DURATION;
 const BPM = 112;
 const SPB = 60 / BPM; // 1拍の秒数
 const BAR = SPB * 4; // 1小節の秒数
-const TOTAL_BARS = Math.floor(DURATION / BAR); // 84小節
+const TOTAL_BARS = Math.floor(DURATION / BAR); // 70小節
 
 const midi = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
@@ -39,25 +39,25 @@ const LOOP_B = [
   {root: 48, tones: [60, 64, 67]},
 ];
 
-const chordAt = (bar) => (bar >= 49 && bar < 62 ? LOOP_B : LOOP_A)[bar % 4];
+const chordAt = (bar) => (bar >= 38 && bar < 48 ? LOOP_B : LOOP_A)[bar % 4];
 
 /* ------------------------------------------------------------------ *
  * 編成（どの小節で何を鳴らすか）— 動画のシーン割りに対応
  * ------------------------------------------------------------------ */
 
 const arrangement = (bar) => {
-  if (bar < 6) return {pad: 0.95, pluck: 0.3, bass: 0, drums: 0, bell: 0.85, lead: 0}; // オープニング
-  if (bar < 15) return {pad: 0.8, pluck: 0.85, bass: 0.7, drums: 0.45, bell: 0.35, lead: 0}; // 対応エリア
-  if (bar < 26) return {pad: 0.7, pluck: 0.9, bass: 0.9, drums: 0.8, bell: 0.3, lead: 0}; // 会社概要
-  if (bar < 49) return {pad: 0.62, pluck: 0.9, bass: 0.95, drums: 0.95, bell: 0.3, lead: 0.9}; // 事業・進め方
-  if (bar < 62) return {pad: 0.7, pluck: 0.95, bass: 1, drums: 1, bell: 0.4, lead: 1}; // 強み（サビ）
-  if (bar < 71) return {pad: 1, pluck: 0.5, bass: 0.45, drums: 0.18, bell: 0.75, lead: 0.5}; // 数字（間）
-  if (bar < 80) return {pad: 0.7, pluck: 0.95, bass: 1, drums: 1, bell: 0.4, lead: 1}; // 手がけるところ
+  if (bar < 5) return {pad: 0.95, pluck: 0.3, bass: 0, drums: 0, bell: 0.85, lead: 0}; // オープニング
+  if (bar < 12) return {pad: 0.8, pluck: 0.85, bass: 0.7, drums: 0.45, bell: 0.35, lead: 0}; // 対応エリア
+  if (bar < 20) return {pad: 0.7, pluck: 0.9, bass: 0.9, drums: 0.8, bell: 0.3, lead: 0}; // 会社概要
+  if (bar < 38) return {pad: 0.62, pluck: 0.9, bass: 0.95, drums: 0.95, bell: 0.3, lead: 0.9}; // 事業・進め方
+  if (bar < 48) return {pad: 0.7, pluck: 0.95, bass: 1, drums: 1, bell: 0.4, lead: 1}; // 強み（サビ）
+  if (bar < 54) return {pad: 1, pluck: 0.5, bass: 0.45, drums: 0.18, bell: 0.75, lead: 0.5}; // 数字（間）
+  if (bar < 66) return {pad: 0.7, pluck: 0.95, bass: 1, drums: 1, bell: 0.4, lead: 1}; // 手がけるところ・ブログ
   return {pad: 1, pluck: 0.4, bass: 0.5, drums: 0.12, bell: 0.95, lead: 0.35}; // クロージング
 };
 
 /** 編成が切り替わる小節（アクセントを置く） */
-const SECTION_STARTS = [6, 15, 26, 49, 62, 71, 80];
+const SECTION_STARTS = [5, 12, 20, 38, 48, 54, 66];
 
 /* ------------------------------------------------------------------ *
  * 音源

@@ -14,7 +14,7 @@ export const Topics: React.FC<{durationInFrames: number}> = ({durationInFrames})
   const {topics, closing} = useContent();
   const frame = useCurrentFrame();
 
-  const urlOpacity = interpolate(frame, [durationInFrames - 130, durationInFrames - 95], [0, 1], {
+  const urlOpacity = interpolate(frame, [durationInFrames - 110, durationInFrames - 80], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -26,7 +26,7 @@ export const Topics: React.FC<{durationInFrames: number}> = ({durationInFrames})
 
       <div style={{marginTop: 56, width: '100%'}}>
         {topics.items.map((item, i) => (
-          <TopicRow key={item.title} title={item.title} note={item.note} delay={90 + i * 55} />
+          <TopicRow key={item.title} title={item.title} note={item.note} delay={70 + i * 48} />
         ))}
       </div>
 

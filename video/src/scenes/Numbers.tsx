@@ -9,7 +9,7 @@ import {useEnter} from '../components/anim';
 
 export const Numbers: React.FC<{durationInFrames: number}> = ({durationInFrames}) => {
   const {numbers} = useContent();
-  const noteEnter = useEnter(360);
+  const noteEnter = useEnter(300);
   const hasPlaceholder = numbers.items.some((n) => n.value === null);
 
   return (
@@ -24,7 +24,7 @@ export const Numbers: React.FC<{durationInFrames: number}> = ({durationInFrames}
             value={n.value}
             unit={n.unit}
             label={n.label}
-            delay={130 + i * 50}
+            delay={100 + i * 45}
           />
         ))}
       </div>

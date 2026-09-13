@@ -16,7 +16,7 @@ export const Region: React.FC<{durationInFrames: number}> = ({durationInFrames})
 
     <div style={{display: 'flex', gap: 56, marginTop: 72, width: '100%'}}>
       {region.points.map((p, i) => (
-        <Point key={p.label} label={p.label} text={p.text} delay={150 + i * 70} />
+        <Point key={p.label} label={p.label} text={p.text} delay={120 + i * 55} />
       ))}
     </div>
   </SceneLayout>
