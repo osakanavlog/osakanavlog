@@ -270,7 +270,7 @@ const commands = {
 };
 
 const [command, ...argv] = process.argv.slice(2);
-const META_COMMANDS = new Set(['doctor', 'setup', 'install', 'uninstall']);
+const META_COMMANDS = new Set(['doctor', 'setup', 'install', 'uninstall', 'verify']);
 if (!command || command === 'help' || (!commands[command] && !META_COMMANDS.has(command))) {
   console.log(`使い方: node .claude/tools/obsidian.mjs <コマンド>
 
@@ -287,6 +287,7 @@ if (!command || command === 'help' || (!commands[command] && !META_COMMANDS.has(
   tags [--limit n]                     タグ一覧
 
   doctor                               設定と接続を点検して直し方を出す
+  verify                               REST API 経由の読み書きを実際に試す
   setup [--vault パス]                 繋がる接続先を探して設定を書く
                                        （API キーは標準入力か OBSIDIAN_API_KEY から）
   install                              全プロジェクトの会話を記録するようにする
@@ -301,6 +302,10 @@ Local REST API 経由になります（links / tags は常にファイル直読�
 // links / tags は vault 全体の走査が要るので、常にファイルを直接読む。
 const args_ = parseArgs(argv);
 if (META_COMMANDS.has(command)) {
+  if (command === 'verify') {
+    const { verify } = await import('./obsidian-verify.mjs');
+    process.exit((await verify()) > 0 ? 1 : 0);
+  }
   if (command === 'install' || command === 'uninstall') {
     const installModule = await import('./obsidian-install.mjs');
     installModule[command]();

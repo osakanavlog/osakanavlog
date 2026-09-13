@@ -13,7 +13,9 @@ import { request as httpsRequest } from 'node:https';
 // プラグインの既定ポート。HTTPS が先、繋がらなければ非暗号化 HTTP を試す。
 export const DEFAULT_ENDPOINTS = ['https://127.0.0.1:27124', 'http://127.0.0.1:27123'];
 
-const BASE = process.env.OBSIDIAN_API_URL || DEFAULT_ENDPOINTS[0];
+// 呼び出しのたびに解決する。接続先を確かめてから切り替える場合があるため、
+// 読み込み時に固定してしまわない。
+const base = () => process.env.OBSIDIAN_API_URL || DEFAULT_ENDPOINTS[0];
 
 function fail(message) {
   const error = new Error(message);
@@ -21,8 +23,8 @@ function fail(message) {
   throw error;
 }
 
-function call(method, path, { body, query, accept = 'application/json' } = {}) {
-  const url = new URL(path, BASE);
+export function call(method, path, { body, query, accept = 'application/json' } = {}) {
+  const url = new URL(path, base());
   for (const [key, value] of Object.entries(query || {})) url.searchParams.set(key, value);
 
   const isHttps = url.protocol === 'https:';
@@ -48,7 +50,7 @@ function call(method, path, { body, query, accept = 'application/json' } = {}) {
     });
     req.on('error', (err) => {
       if (err.code === 'ECONNREFUSED') {
-        reject(new Error(`${BASE} に接続できません。Obsidian が起動していて Local REST API プラグインが有効か確認してください。`));
+        reject(new Error(`${base()} に接続できません。Obsidian が起動していて Local REST API プラグインが有効か確認してください。`));
       } else reject(err);
     });
     if (body !== undefined) req.write(body);
