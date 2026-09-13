@@ -98,17 +98,26 @@ export function rank(root, text, { exclude = [], limit = 3, excerptsPerNote = 2 
   scored.sort((a, b) => b.matched.length - a.matched.length || b.score - a.score);
 
   const results = scored.slice(0, limit).map((note) => {
-    const lines = note.body.split('\n');
-    const excerpts = [];
-    for (const line of lines) {
-      if (excerpts.length >= excerptsPerNote) break;
+    // frontmatter は中身ではないので抜粋の対象から外す
+    const body = note.body.replace(/^---\n[\s\S]*?\n---\n?/, '');
+
+    // 一致した語の数が多い行ほど、質問の答えが書かれている可能性が高い。
+    // 本文の先頭から詰めると、漠然とした導入文で枠が埋まってしまう。
+    const candidates = [];
+    body.split('\n').forEach((line, index) => {
       const trimmed = line.trim();
       // 見出しや区切りは抜粋にしない（ノート名で分かるうえ、中身の情報がない）
-      if (trimmed.length < 4 || trimmed.startsWith('---') || trimmed.startsWith('#')) continue;
-      if (note.matched.some((t) => trimmed.toLowerCase().includes(t.toLowerCase()))) {
-        excerpts.push(trimmed.slice(0, 160));
-      }
-    }
+      if (trimmed.length < 4 || trimmed.startsWith('#') || trimmed.startsWith('---')) return;
+      const hits = note.matched.filter((t) => trimmed.toLowerCase().includes(t.toLowerCase())).length;
+      if (hits) candidates.push({ index, hits, text: trimmed.slice(0, 160) });
+    });
+
+    candidates.sort((a, b) => b.hits - a.hits || a.index - b.index);
+    const excerpts = candidates
+      .slice(0, excerptsPerNote)
+      .sort((a, b) => a.index - b.index) // 読みやすさのため本文の順に戻す
+      .map((c) => c.text);
+
     return { rel: note.rel, score: note.score, matched: note.matched, excerpts };
   });
 
