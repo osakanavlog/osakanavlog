@@ -166,3 +166,31 @@ xvfb-run -a --server-args="-screen 0 1920x1080x24" blender --python start_mcp.py
 - blender-mcp: https://github.com/ahujasid/blender-mcp
 - Claude Code MCP ドキュメント: https://code.claude.com/docs/en/mcp
 - Claude Code クイックスタート: https://code.claude.com/docs/en/quickstart
+
+## 外部アセットが取得できない環境での代替
+
+コンテナ実行時、組織の外部通信ポリシーにより以下が遮断されることがある
+（プロキシが CONNECT に 403 を返す）。
+
+- `api.polyhaven.com` — Poly Haven の HDRI・テクスチャ
+- `download.blender.org` — OpenImageDenoise 入りの公式ビルド
+
+遮断された場合は迂回せず、以下で代替する。手元の PC では通常これらの制限はない。
+
+| 得られないもの | 代替 |
+| --- | --- |
+| HDRI による環境光 | ノードで縦グラデーションの環境光を組む（`genkan_cabinet.py` の `build_environment()`） |
+| Cycles のデノイズ | 少ないサンプルでレンダリングし、`denoise.py` で後処理する |
+| 木材・布のテクスチャ | ノイズテクスチャを方向別に引き伸ばして手続き的に作る |
+
+`denoise.py` は OpenCV の Non-local means を使う。強度の目安は以下。
+
+| 強度 | 用途 |
+| --- | --- |
+| `h=2.0` 前後 | 細い線を保ちたいとき（プリーツ、目地） |
+| `h=3.0` | 既定。木目を保ちつつノイズを落とす |
+| `h=9.0` 以上 | 無地面のみ。細部は失われる |
+
+なお、ノイズをサンプル数や後処理で潰す前に、光源の配置を疑うこと。
+Cycles の光源は半径 `shadow_soft_size` の球として扱われるため、天井や壁を
+貫通させるとサンプルの大半が遮蔽され、サンプル数をいくら上げても収束しない。
