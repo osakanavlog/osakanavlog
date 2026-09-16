@@ -1,0 +1,112 @@
+:root{
+  --bg:#07080d; --ink:#e9ecf5; --ink2:#aab3c8; --muted:#6f7a92;
+  --panel:rgba(16,19,29,.92); --line:#262c3c; --line2:#39415a;
+  --accent:#7f9cff; --accent2:#3a55d9; --good:#5fd0a0; --bad:#ff7a68; --warn:#e9b96a;
+  --hikari:#d9b44a; --tane:#7fb1e0; --aka:#e06a5c; --ao:#6f86d8; --kasu:#8a93a8;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --jp:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--jp);overflow:hidden;height:100vh}
+canvas{display:block;width:100vw;height:100vh;cursor:crosshair}
+.hidden{display:none !important}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-size:26px;margin:6px 0 0;letter-spacing:.01em}
+h2{font-size:19px;margin:4px 0 0}
+.lead{color:var(--ink2);font-size:13.5px;line-height:1.75;margin:10px 0 0}
+.note{color:var(--muted);font-size:12px;line-height:1.7;margin:12px 0 0;border-left:2px solid var(--line2);padding-left:10px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,5,9,.82);backdrop-filter:blur(6px);z-index:40;padding:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:26px;width:min(460px,100%);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.gate-panel{width:min(520px,100%)}
+.field{display:block;margin:18px 0 0}
+.field span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+input{width:100%;background:#0b0e17;border:1px solid var(--line2);color:var(--ink);padding:11px 12px;border-radius:3px;font-size:15px;font-family:var(--jp)}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.gate-id{margin-top:16px;padding:12px;border:1px dashed var(--line2);border-radius:3px;display:grid;gap:4px}
+.gate-id .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.gate-id code{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
+.gate-id .n{font-size:11.5px;color:var(--muted);line-height:1.6}
+button{font-family:var(--jp);font-size:14px;padding:11px 18px;border-radius:3px;cursor:pointer;border:1px solid transparent}
+button.primary{background:var(--accent2);border-color:#4d66e8;color:#fff;font-weight:700}
+button.primary:hover{background:#4b63e6}
+button.ghost{background:transparent;border-color:var(--line2);color:var(--ink2)}
+button.ghost:hover{border-color:var(--accent);color:var(--ink)}
+button.small{padding:7px 12px;font-size:12.5px}
+#enter{width:100%;margin-top:18px}
+.row{display:flex;gap:10px;margin-top:20px}
+.row button{flex:1}
+.keys{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:5px;border-top:1px solid var(--line);padding-top:14px}
+.keys li{font-size:12.5px;color:var(--muted)}
+.keys b{color:var(--ink2);font-family:var(--mono);font-size:11.5px;margin-right:8px}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:20}
+.hud-box{position:absolute;background:rgba(10,13,21,.82);border:1px solid var(--line);border-radius:3px;padding:11px 13px;font-family:var(--mono);font-size:11.5px;line-height:1.85;color:var(--ink2)}
+#hudStats{top:12px;left:12px;min-width:210px}
+#hudStats b{color:var(--ink);font-weight:700}
+#hudStats .warn{color:var(--warn)}
+.hud-legend{bottom:12px;left:12px;pointer-events:auto;font-family:var(--jp);font-size:11.5px}
+.lg{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.lg i{width:10px;height:10px;border-radius:50%;flex:none}
+.sw-near{background:var(--accent)}
+.sw-mid{background:#4a5a80}
+.sw-far{background:#2c3550}
+.lag{display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+select{margin-top:5px;width:100%;background:#0b0e17;color:var(--ink2);border:1px solid var(--line2);border-radius:3px;padding:5px;font-size:11.5px;font-family:var(--jp)}
+#toasts{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;max-width:280px}
+.toast{background:rgba(10,13,21,.92);border:1px solid var(--line2);border-left:3px solid var(--accent);padding:8px 12px;font-size:12.5px;border-radius:2px;animation:slide .2s ease-out}
+.toast.error{border-left-color:var(--bad);color:#ffd9d3}
+@keyframes slide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+#chatForm{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:min(440px,86vw);pointer-events:auto}
+.hint{position:absolute;bottom:16px;right:14px;font-size:12px;color:var(--muted);font-family:var(--mono);text-align:right;line-height:1.7}
+
+/* 対戦 */
+.duel-wrap{width:min(1000px,100%);max-height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:14px}
+.duel-head{display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap}
+.duel-meta{font-family:var(--mono);font-size:11.5px;color:var(--ink2);line-height:1.8;text-align:right}
+.side,.field-area,.hand-area{background:rgba(13,16,25,.9);border:1px solid var(--line);border-radius:3px;padding:11px 13px}
+.field-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;font-size:12px;color:var(--ink2)}
+.cards{display:flex;flex-wrap:wrap;gap:6px;min-height:92px}
+.side .cards{min-height:0;gap:3px}
+.side-head{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:7px}
+.side-head .yaku{color:var(--good);font-size:12px}
+.side-head .nm{font-weight:700}
+.side-head .koi{color:var(--warn);font-family:var(--mono);font-size:11px;margin-left:8px}
+
+.card{width:58px;height:88px;border-radius:4px;border:1px solid var(--line2);background:linear-gradient(170deg,#171c29,#10131d);display:flex;flex-direction:column;justify-content:space-between;padding:6px 5px;position:relative;user-select:none;flex:none}
+.card .mon{font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:.06em}
+.card .glyph{font-size:19px;text-align:center;line-height:1.1;font-weight:700}
+.card .lab{font-size:8.5px;color:var(--ink2);text-align:center;line-height:1.25;word-break:keep-all}
+.card .badge{position:absolute;right:4px;top:4px;font-size:8.5px;padding:1px 3px;border-radius:2px;font-family:var(--mono)}
+.card.hikari{border-color:var(--hikari);box-shadow:inset 0 0 18px rgba(217,180,74,.14)}
+.card.hikari .glyph{color:var(--hikari)} .card.hikari .badge{background:rgba(217,180,74,.2);color:var(--hikari)}
+.card.tane{border-color:var(--tane)} .card.tane .glyph{color:var(--tane)} .card.tane .badge{background:rgba(127,177,224,.18);color:var(--tane)}
+.card.tan-aka{border-color:var(--aka)} .card.tan-aka .glyph{color:var(--aka)} .card.tan-aka .badge{background:rgba(224,106,92,.18);color:var(--aka)}
+.card.tan-ao{border-color:var(--ao)} .card.tan-ao .glyph{color:var(--ao)} .card.tan-ao .badge{background:rgba(111,134,216,.18);color:var(--ao)}
+.card.tan-plain{border-color:#8d7f62} .card.tan-plain .glyph{color:#c3ac7e} .card.tan-plain .badge{background:rgba(195,172,126,.16);color:#c3ac7e}
+.card.kasu .glyph{color:var(--kasu)} .card.kasu .badge{background:rgba(138,147,168,.14);color:var(--kasu)}
+.card.mini{width:30px;height:44px;padding:3px 2px}
+.card.mini .lab,.card.mini .mon{display:none}
+.card.mini .glyph{font-size:13px;margin:auto}
+.card.mini .badge{font-size:7px;right:2px;top:2px;padding:0 2px}
+.card.pick{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.card.pick:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.card.match{outline:2px solid var(--accent);outline-offset:1px}
+.card.dim{opacity:.35}
+.card.back{background:repeating-linear-gradient(45deg,#1b2030,#1b2030 4px,#141824 4px,#141824 8px)}
+.duel-foot{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.log{flex:1;min-width:240px;font-size:11.5px;color:var(--muted);line-height:1.8;max-height:96px;overflow-y:auto;font-family:var(--mono)}
+.choice{display:flex;gap:10px}
+#resultBody{margin-top:12px;font-size:13.5px;color:var(--ink2);line-height:1.9}
+#resultBody .yk{font-family:var(--mono);color:var(--good)}
+#resultClose{width:100%;margin-top:18px}
+
+@media(max-width:640px){
+  .card{width:46px;height:70px}
+  .card .glyph{font-size:15px}
+  .card .lab{font-size:7.5px}
+  #hudStats{font-size:10.5px;min-width:0}
+  .hud-legend{display:none}
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>OZ プロトタイプ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="view"></canvas>
+
+<!-- 入場 -->
+<div id="gate" class="overlay">
+  <div class="panel gate-panel">
+    <p class="eyebrow">OZ PROTOTYPE / docs/oz の設計図の実装</p>
+    <h1>OZ に入場する</h1>
+    <p class="lead">区画サーバが権威を持つ共有空間です。端末は方向だけを送り、座標はサーバが確定させます。</p>
+    <label class="field">
+      <span>表示名</span>
+      <input id="name" maxlength="12" placeholder="なまえ" autocomplete="off">
+    </label>
+    <div class="gate-id">
+      <span class="k">端末鍵（模擬）</span>
+      <code id="device"></code>
+      <span class="n">この端末に保存され、外に出ません。入場時に 10 分間のセッション資格情報と交換します。</span>
+    </div>
+    <button id="enter" class="primary">入場</button>
+    <ul class="keys">
+      <li><b>WASD / 方向キー</b> 移動</li>
+      <li><b>E</b> 近くの人に対戦を申し込む</li>
+      <li><b>C</b> OZ の対戦相手と花札こいこい</li>
+      <li><b>Enter</b> 発言</li>
+    </ul>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-box" id="hudStats"></div>
+  <div class="hud-box hud-legend">
+    <div class="lg"><i class="sw-near"></i>近傍 30 m ／ 20 Hz ／ 個体として同期</div>
+    <div class="lg"><i class="sw-mid"></i>中景 200 m ／ 2.5 Hz ／ 代表点のみ</div>
+    <div class="lg"><i class="sw-far"></i>遠景 ／ 0.5 Hz ／ 密度格子から生成（右下の全体図と、引いた視点で見えます）</div>
+    <label class="lag">
+      回線の模擬遅延
+      <select id="lag">
+        <option value="0">0 ms（同一拠点）</option>
+        <option value="50" selected>50 ms（国内）</option>
+        <option value="150">150 ms（大陸間）</option>
+        <option value="400">400 ms（劣悪）</option>
+      </select>
+    </label>
+  </div>
+  <div id="toasts"></div>
+  <form id="chatForm" class="hidden"><input id="chatInput" maxlength="60" placeholder="発言して Enter"></form>
+  <div class="hint" id="hint"></div>
+</div>
+
+<!-- AL2 確認 -->
+<div id="confirm" class="overlay hidden">
+  <div class="panel confirm-panel">
+    <p class="eyebrow">保証レベル AL2 が必要です</p>
+    <h2 id="confirmTitle">対戦を始めますか</h2>
+    <p class="lead" id="confirmBody"></p>
+    <p class="note">賭けの対象はコインのみです。アカウントと権限は、勝敗によって移転しません（設計図 04 章）。</p>
+    <div class="row">
+      <button id="confirmNo" class="ghost">やめる</button>
+      <button id="confirmYes" class="primary">確認して実行</button>
+    </div>
+  </div>
+</div>
+
+<!-- 対戦 -->
+<div id="duel" class="overlay hidden">
+  <div class="duel-wrap">
+    <header class="duel-head">
+      <div><span class="eyebrow">対戦ルーム / 花札こいこい</span><h2 id="duelTitle">対戦</h2></div>
+      <div class="duel-meta" id="duelMeta"></div>
+      <button id="duelQuit" class="ghost small">投了して戻る</button>
+    </header>
+    <section class="side" id="oppSide"></section>
+    <section class="field-area">
+      <div class="field-head"><span class="eyebrow">場</span><span id="deckCount"></span></div>
+      <div class="cards" id="fieldCards"></div>
+    </section>
+    <section class="side" id="mySide"></section>
+    <section class="hand-area">
+      <div class="field-head"><span class="eyebrow">手札</span><span id="prompt"></span></div>
+      <div class="cards" id="handCards"></div>
+    </section>
+    <footer class="duel-foot">
+      <div class="log" id="duelLog"></div>
+      <div class="choice hidden" id="choice">
+        <button id="btnAgari" class="primary">あがり</button>
+        <button id="btnKoi" class="ghost">こいこい</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<div id="result" class="overlay hidden">
+  <div class="panel">
+    <p class="eyebrow">対局結果</p>
+    <h2 id="resultTitle"></h2>
+    <div id="resultBody"></div>
+    <button id="resultClose" class="primary">空間に戻る</button>
+  </div>
+</div>
+
+<script src="duel.js"></script>
+<script src="client.js"></script>
+</body>
+</html>

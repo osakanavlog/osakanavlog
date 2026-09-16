@@ -1,0 +1,14 @@
+{
+  "name": "oz-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "docs/oz の設計図を動く形にした最小実装。区画サーバ、クライアント予測、関心管理、群衆統計、花札こいこいの対戦ルーム。",
+  "type": "commonjs",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test/smoke.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": { "ws": "^8.18.0" }
+}
