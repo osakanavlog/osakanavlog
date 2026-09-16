@@ -105,6 +105,62 @@ Blender を起動し **Edit → Preferences → Add-ons** で `MCP for Blender` 
 | connected だが操作できない | Blender 側で **Start MCP Server** を押し忘れていないか確認する |
 | 登録を削除したい | `claude mcp remove --scope user blender` |
 
+## ヘッドレス環境（Linux / GUI なし）で構築する場合
+
+基本仕様は GUI 版 Blender を前提としている。CI やコンテナなど画面のない環境で
+同じ構成を組む場合は、以下の差分がある。**GUI 環境では起きない問題なので、
+通常のセットアップでは読み飛ばしてよい。**
+
+### 起動方法
+
+GUI の **Start MCP Server** ボタンに相当する処理をスクリプト化し、仮想ディスプレイ上で
+Blender を常駐させる。バックグラウンドモード（`-b`）ではイベントループが回らず
+サーバが待ち受けないため、`xvfb-run` を使う。
+
+```python
+# start_mcp.py
+import bpy
+
+def start():
+    bpy.ops.preferences.addon_enable(module="blender_mcp")
+    bpy.ops.blendermcp.start_server()
+    print("SERVER_RUNNING:", bpy.context.scene.blendermcp_server_running)
+    return None
+
+bpy.app.timers.register(start, first_interval=3.0)
+```
+
+```bash
+export LIBGL_ALWAYS_SOFTWARE=1
+xvfb-run -a --server-args="-screen 0 1920x1080x24" blender --python start_mcp.py
+```
+
+### つまずいた点
+
+| 症状 | 原因 | 対処 |
+| --- | --- | --- |
+| `install-addon` が「アドオンディレクトリが見つからない」で失敗 | Blender を一度も起動していないとディレクトリが作られない | ディレクトリを作り `BLENDERMCP_ADDONS_DIR` で明示する |
+| アドオン有効化時に `ModuleNotFoundError: requests` | apt 版 Blender はシステム Python を使うが `requests` が未導入 | `apt-get install -y python3-requests` |
+| `get_viewport_screenshot` が真っ黒な画像を返す | ソフトウェア OpenGL では GL バッファの読み出しが効かない | ビューポートを諦め、`bpy.ops.render.render(write_still=True)` で実レンダリングして確認する |
+| レンダリングが `Error: Build without OpenImageDenoiser` で失敗 | Ubuntu 版 Blender はデノイザ非搭載ビルド | `scene.cycles.use_denoising = False`。ノイズはサンプル数で潰す |
+| `python3` で入れたはずのモジュールが読めない | `python3` が 3.11 を指す一方、apt パッケージは 3.12 向けだった | `/usr/bin/python3.12` のようにインタプリタを明示する |
+
+### スクリプトを書くときの注意
+
+- **シェーダーノードは名前ではなく `type` で引く。** UI 言語が日本語だと
+  `nodes["プリンシプルBSDF"]` になり、英語名では取得できない
+  （`next(n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED")`）
+- **`scene.render.engine` は RNA が選択肢を過小申告する。** 代入して `TypeError` を
+  捕まえるのが確実。`view_settings.view_transform` も同様
+- **長いレンダリングは MCP の 60 秒タイムアウトを超える。** ツール呼び出しは失敗するが
+  Blender 側の処理は続くので、出力ファイルの生成を待って確認する
+
+## 生成例
+
+`scripts/blender/genkan_cabinet.py` を実行して出力したパース。
+
+![玄関収納のパース](images/genkan_perspective.png)
+
 ## 参考
 
 - blender-mcp: https://github.com/ahujasid/blender-mcp
