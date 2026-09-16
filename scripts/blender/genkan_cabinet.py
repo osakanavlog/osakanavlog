@@ -230,17 +230,63 @@ def setup_lights():
         scene.collection.objects.link(ob)
         return ob
 
-    area("Key",  (-0.9, -1.6, 2.55), 1.6, 28.0)
-    area("Fill", (-2.2, -2.4, 1.50), 2.0, 11.0,
+    # 面光源は大きいほど影が柔らかくなり、同じサンプル数でもノイズが減る
+    area("Key",  (-0.9, -1.6, 2.55), 2.9, 32.0)
+    area("Fill", (-2.2, -2.4, 1.50), 3.6, 13.0,
          rot=(radians(75), 0, radians(-50)))
-    area("Top",  (0.4, -0.9, 2.60), 1.2, 15.0)
+    area("Top",  (0.4, -0.9, 2.60), 2.2, 17.0)
 
+    build_environment()
+
+
+def build_environment(sky_top=(0.62, 0.66, 0.72, 1.0),
+                      sky_horizon=(0.50, 0.50, 0.50, 1.0),
+                      ground=(0.22, 0.21, 0.20, 1.0),
+                      strength=0.55):
+    """HDRI の代わりになる環境光をノードで組む。外部ファイルは不要。
+
+    Generated 座標の Z 成分を取り出し、上を明るく・下を床色にした縦の
+    グラデーションにする。一様なグレー背景と違って上から光が回り込み、
+    下からは弱い反射が返るので、陰影に方向性が出る。
+
+    実物の HDRI が使える環境なら、Poly Haven などから取得したものに
+    差し替えたほうが質は上がる。
+    """
+    scene = bpy.context.scene
     world = scene.world or bpy.data.worlds.new("World")
     scene.world = world
     world.use_nodes = True
-    bg = next(n for n in world.node_tree.nodes if n.type == "BACKGROUND")
-    bg.inputs["Color"].default_value = (0.55, 0.56, 0.58, 1.0)
-    bg.inputs["Strength"].default_value = 0.18
+    nt = world.node_tree
+    nt.nodes.clear()
+
+    out  = nt.nodes.new("ShaderNodeOutputWorld")
+    bg   = nt.nodes.new("ShaderNodeBackground")
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    sep  = nt.nodes.new("ShaderNodeSeparateXYZ")
+    mapr = nt.nodes.new("ShaderNodeMapRange")
+    tex  = nt.nodes.new("ShaderNodeTexCoord")
+
+    for i, n in enumerate((tex, sep, mapr, ramp, bg, out)):
+        n.location = (i * 210 - 1050, 0)
+
+    mapr.inputs["From Min"].default_value = -0.35
+    mapr.inputs["From Max"].default_value = 0.85
+
+    cr = ramp.color_ramp
+    cr.elements[0].position = 0.0
+    cr.elements[0].color = ground
+    cr.elements[1].position = 0.52
+    cr.elements[1].color = sky_horizon
+    cr.elements.new(0.92).color = sky_top
+
+    bg.inputs["Strength"].default_value = strength
+
+    nt.links.new(tex.outputs["Generated"], sep.inputs["Vector"])
+    nt.links.new(sep.outputs["Z"], mapr.inputs["Value"])
+    nt.links.new(mapr.outputs["Result"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], bg.inputs["Color"])
+    nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
+    return world
 
 
 def setup_render(cfg):
