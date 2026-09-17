@@ -161,6 +161,17 @@ xvfb-run -a --server-args="-screen 0 1920x1080x24" blender --python start_mcp.py
 
 ![玄関収納のパース](images/genkan_perspective.png)
 
+`scripts/blender/window_shade.py` はプリーツスクリーンのある窓辺を再現する。
+
+![プリーツスクリーンの窓辺](images/window_shade.png)
+
+`scripts/blender/house_plan.py` は平面図から住宅一棟を起こす。
+俯瞰は手前 2 面をカットアウェイし、外観は屋根を出して描く。
+
+![住宅の俯瞰パース](images/house_dollhouse.png)
+
+![住宅の外観パース](images/house_exterior.png)
+
 ## 参考
 
 - blender-mcp: https://github.com/ahujasid/blender-mcp
