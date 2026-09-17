@@ -1,0 +1,96 @@
+/* UNIQLO スタイルのデザイントークン
+   角丸・影は存在しない。区切りはヘアラインと面の色のみ。
+   --brand を差し替えれば別ブランドに転用できる。 */
+
+:root {
+  /* ブランド */
+  --brand: #ff0000;          /* アクセントは 1 色だけ */
+  --brand-dark: #d70000;     /* hover / 押下 */
+
+  /* 面 */
+  --bg: #ffffff;
+  --bg-subtle: #f5f5f5;      /* セクション帯・画像プレースホルダ */
+  --bg-invert: #000000;
+
+  /* 文字 */
+  --text: #111111;
+  --text-muted: #767676;     /* 白背景で 4.5:1。11px まで使用可 */
+  --text-on-invert: #ffffff;
+
+  /* 罫線 */
+  --line: #e5e5e5;
+  --line-strong: #111111;
+
+  /* 角丸は使わない */
+  --radius: 0;
+
+  /* 余白（4px グリッド） */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap: 12px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+  --gap-xl: 40px;
+  --gap-2xl: 64px;
+  --edge: clamp(12px, 3vw, 32px);   /* 画面左右の余白 */
+  --section-y: clamp(40px, 6vw, 72px);
+
+  --wrap: 1440px;
+
+  /* タイポグラフィ */
+  --font: "Helvetica Neue", Helvetica, Arial, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+
+  --fs-label: 11px;    /* 英字ラベル・バッジ・税表記 */
+  --fs-nav: 12px;
+  --fs-sm: 13px;       /* 商品名 */
+  --fs-body: 14px;
+  --fs-price: 18px;
+  --fs-lead: clamp(16px, 2vw, 20px);
+  --fs-h3: clamp(18px, 2.4vw, 24px);
+  --fs-h2: clamp(24px, 4vw, 40px);
+  --fs-h1: clamp(32px, 6vw, 64px);
+
+  --ls-label: 0.08em;  /* 英字大文字ラベル */
+  --ls-head: 0.01em;
+  --lh-tight: 1.2;
+  --lh-name: 1.5;
+  --lh-body: 1.7;
+
+  /* 画像比率 */
+  --ratio-product: 3 / 4;
+  --ratio-banner: 16 / 9;
+  --ratio-square: 1 / 1;
+
+  /* モーション（速く、控えめに） */
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0d0d;
+    --bg-subtle: #1a1a1a;
+    --bg-invert: #ffffff;
+    --text: #f5f5f5;
+    --text-muted: #a3a3a3;
+    --text-on-invert: #111111;
+    --line: #333333;
+    --line-strong: #f5f5f5;
+    --brand: #ff3b30;        /* 暗背景では純赤が滲むので少し明るく */
+    --brand-dark: #ff6259;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d0d0d;
+  --bg-subtle: #1a1a1a;
+  --bg-invert: #ffffff;
+  --text: #f5f5f5;
+  --text-muted: #a3a3a3;
+  --text-on-invert: #111111;
+  --line: #333333;
+  --line-strong: #f5f5f5;
+  --brand: #ff3b30;
+  --brand-dark: #ff6259;
+}

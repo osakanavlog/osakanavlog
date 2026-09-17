@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIQLO スタイル デモ</title>
+<link rel="stylesheet" href="../references/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font); font-size: var(--fs-body);
+    line-height: var(--lh-body); color: var(--text); background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; width: 100%; height: auto; }
+  .wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--edge); }
+  .label { font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--ls-label); color: var(--text-muted); margin: 0; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  /* ヘッダー */
+  .header { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .header__utility { display: flex; align-items: center; justify-content: space-between; padding-block: var(--gap-sm); }
+  .header__logo { display: inline-block; background: var(--brand); color: #fff; font-weight: 700; font-size: var(--fs-nav); letter-spacing: var(--ls-label); padding: 6px 8px; text-decoration: none; }
+  .header__utility nav ul { display: flex; gap: var(--gap-md); margin: 0; padding: 0; list-style: none; }
+  .header__utility a.util { font-size: var(--fs-label); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text); text-decoration: none; }
+  .header__cats { display: flex; gap: var(--gap-lg); overflow-x: auto; scroll-snap-type: x proximity; padding-block: var(--gap-sm); margin: 0; list-style: none; }
+  .header__cats::-webkit-scrollbar { display: none; }
+  .header__cats a { scroll-snap-align: start; white-space: nowrap; font-size: var(--fs-nav); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text); text-decoration: none; padding-bottom: 4px; border-bottom: 2px solid transparent; display: inline-block; }
+  .header__cats a[aria-current="page"], .header__cats a:hover { border-color: var(--brand); }
+
+  /* バナー */
+  .banner { position: relative; margin-bottom: var(--section-y); }
+  .banner__img { aspect-ratio: var(--ratio-banner); background: linear-gradient(120deg, #d8d8d8, #ededed 40%, #c9c9c9); }
+  .banner__box { background: var(--bg); padding: var(--gap-lg); }
+  @media (min-width: 768px) {
+    .banner__box { position: absolute; left: var(--edge); bottom: var(--edge); max-width: 380px; padding: var(--gap-xl); }
+  }
+  .banner__title { font-size: var(--fs-h2); font-weight: 700; line-height: var(--lh-tight); letter-spacing: var(--ls-head); margin: var(--gap-sm) 0; }
+  .banner__text { margin: 0 0 var(--gap-md); color: var(--text-muted); font-size: var(--fs-sm); }
+  .textlink { color: var(--text); font-size: var(--fs-body); text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; }
+  .textlink:hover { color: var(--brand); border-color: var(--brand); }
+
+  /* 見出し */
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--gap); margin-bottom: var(--gap-md); }
+  .sec-head h2 { font-size: var(--fs-h3); font-weight: 700; letter-spacing: var(--ls-head); margin: 0; }
+
+  /* ツールバー */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); padding-block: var(--gap); border-bottom: 1px solid var(--line); font-size: var(--fs-sm); }
+  .toolbar .count { font-variant-numeric: tabular-nums; color: var(--text-muted); }
+  .toolbar select { font: inherit; border: 1px solid var(--line-strong); border-radius: 0; background: var(--bg); color: var(--text); padding: 6px 8px; }
+
+  /* 商品グリッド */
+  .grid { display: grid; gap: var(--gap-sm); grid-template-columns: repeat(2, 1fr); margin: var(--gap-md) 0 0; padding: 0; list-style: none; }
+  @media (min-width: 600px)  { .grid { grid-template-columns: repeat(3, 1fr); gap: var(--gap); } }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); gap: var(--gap-md); } }
+  @media (min-width: 1440px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+  .product__link { display: block; color: inherit; text-decoration: none; }
+  .product__media { position: relative; aspect-ratio: var(--ratio-product); background: var(--bg-subtle); overflow: hidden; }
+  .product__media--alt { position: absolute; inset: 0; opacity: 0; transition: opacity var(--dur) var(--ease); background: #d9d9d9; }
+  .product__link:hover .product__media--alt, .product__link:focus-visible .product__media--alt { opacity: 1; }
+  .product__badges { margin: var(--gap-sm) 0 0; display: flex; gap: var(--gap-xs); }
+  .product__name { font-size: var(--fs-sm); font-weight: 400; line-height: var(--lh-name); margin: var(--gap-xs) 0; }
+  .product__price { margin: 0; display: flex; align-items: baseline; gap: var(--gap-xs); flex-wrap: wrap; }
+  .price { font-size: var(--fs-price); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .price--sale { color: var(--brand); }
+  .price__was { font-size: var(--fs-label); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .price__tax { font-size: var(--fs-label); color: var(--text-muted); }
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 0; font-size: var(--fs-label); letter-spacing: var(--ls-label); background: var(--bg-invert); color: var(--text-on-invert); }
+  .badge--sale { background: var(--brand); color: #fff; }
+
+  /* CTA */
+  .cta { text-align: center; padding-block: var(--section-y); }
+  .btn { display: inline-block; border: 0; border-radius: 0; padding: 14px 32px; font-size: var(--fs-body); font-weight: 700; text-decoration: none; cursor: pointer; transition: background-color var(--dur) var(--ease); }
+  .btn--primary { background: var(--brand); color: #fff; }
+  .btn--primary:hover { background: var(--brand-dark); }
+
+  .footer { border-top: 1px solid var(--line); padding-block: var(--gap-xl); font-size: var(--fs-label); color: var(--text-muted); }
+  section { padding-block: var(--section-y); }
+  .banner { padding-block: 0; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__utility">
+    <a class="header__logo" href="#">BRAND</a>
+    <nav aria-label="ユーティリティ">
+      <ul>
+        <li><a class="util" href="#">検索</a></li>
+        <li><a class="util" href="#">店舗</a></li>
+        <li><a class="util" href="#">カート（0）</a></li>
+      </ul>
+    </nav>
+  </div>
+  <nav class="wrap" aria-label="カテゴリ">
+    <ul class="header__cats">
+      <li><a href="#" aria-current="page">Women</a></li>
+      <li><a href="#">Men</a></li>
+      <li><a href="#">Kids</a></li>
+      <li><a href="#">Baby</a></li>
+      <li><a href="#">Sale</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section class="banner">
+    <div class="banner__img" aria-hidden="true"></div>
+    <div class="banner__box">
+      <p class="label">New Arrival</p>
+      <h2 class="banner__title">春の定番を、もう一度。</h2>
+      <p class="banner__text">軽くて乾きやすい素材に刷新しました。</p>
+      <a class="textlink" href="#list">商品を見る</a>
+    </div>
+  </section>
+
+  <section class="wrap" id="list" style="padding-top:0;">
+    <div class="sec-head">
+      <h2>新着アイテム</h2>
+      <a class="textlink" href="#">すべて見る</a>
+    </div>
+    <div class="toolbar">
+      <span class="count">124件</span>
+      <label>並び替え
+        <select>
+          <option>おすすめ順</option>
+          <option>価格が安い順</option>
+          <option>新着順</option>
+        </select>
+      </label>
+    </div>
+    <ul class="grid">
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"><span class="badge badge--sale">限定価格</span></p>
+        <h3 class="product__name">クルーネックT（半袖）</h3>
+        <p class="product__price"><strong class="price price--sale">¥1,290</strong><s class="price__was">¥1,990</s><span class="price__tax">税込</span></p>
+      </a></li>
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"><span class="badge">NEW</span></p>
+        <h3 class="product__name">ワイドフィットテーパードパンツ</h3>
+        <p class="product__price"><strong class="price">¥3,990</strong><span class="price__tax">税込</span></p>
+      </a></li>
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"><span class="badge">NEW</span></p>
+        <h3 class="product__name">オーバーサイズシャツ（長袖）</h3>
+        <p class="product__price"><strong class="price">¥2,990</strong><span class="price__tax">税込</span></p>
+      </a></li>
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"><span class="badge badge--sale">限定価格</span></p>
+        <h3 class="product__name">ライトダウンベスト</h3>
+        <p class="product__price"><strong class="price price--sale">¥4,990</strong><s class="price__was">¥6,990</s><span class="price__tax">税込</span></p>
+      </a></li>
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"></p>
+        <h3 class="product__name">コットンソックス（3足組）</h3>
+        <p class="product__price"><strong class="price">¥990</strong><span class="price__tax">税込</span></p>
+      </a></li>
+      <li class="product"><a class="product__link" href="#">
+        <div class="product__media"><div class="product__media--alt" aria-hidden="true"></div></div>
+        <p class="product__badges"></p>
+        <h3 class="product__name">リブタートルネックセーター</h3>
+        <p class="product__price"><strong class="price">¥2,990</strong><span class="price__tax">税込</span></p>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <p class="label">Members only</p>
+      <h2 style="font-size:var(--fs-h2);font-weight:700;line-height:var(--lh-tight);margin:var(--gap-sm) 0 var(--gap-md);">会員登録で、いつでも送料無料。</h2>
+      <a class="btn btn--primary" href="#">無料で登録する</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">uniqlo-style-site スキルのデモ。UNIQLO のロゴ・商標・商品写真は使用していません。</div>
+</footer>
+
+</body>
+</html>

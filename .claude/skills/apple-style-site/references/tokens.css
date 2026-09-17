@@ -1,0 +1,114 @@
+/* Apple スタイルのデザイントークン
+   使い方: このファイルを CSS の先頭にコピーし、--accent 系だけブランド色に差し替える。
+   値の単位系は 8px グリッド。 */
+
+:root {
+  /* 面（全幅セクションの背景として交互に使う） */
+  --surface-white: #ffffff;
+  --surface-gray: #f5f5f7;
+  --surface-black: #000000;
+  --surface-card: #f5f5f7;
+
+  /* 文字 */
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;  /* 13px 以上で使用可 */
+  --text-tertiary: #86868b;   /* 15px 以上・装飾的な補足のみ */
+  --text-on-dark: #f5f5f7;
+  --text-on-dark-secondary: #a1a1a6;
+
+  /* アクセント（ここだけブランド色に置き換える） */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-link: #0066cc;
+  --accent-on-dark: #2997ff;
+
+  /* 罫線 — 原則使わない。表組みなど必要な箇所のみ */
+  --hairline: rgba(0, 0, 0, 0.12);
+
+  /* 角丸 */
+  --radius-card: 18px;
+  --radius-card-lg: 28px;
+  --radius-pill: 980px;
+
+  /* 余白（8px グリッド） */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-12: 96px;
+  --space-16: 128px;
+  --section-y: clamp(64px, 10vw, 128px);
+
+  /* 幅 */
+  --wrap: 980px;      /* Apple の標準コンテンツ幅 */
+  --wrap-wide: 1200px;
+  --gutter: clamp(16px, 5vw, 24px);
+
+  /* タイポグラフィ */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro JP", "SF Pro Display",
+    "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    Meiryo, sans-serif;
+
+  --fs-display: clamp(40px, 7vw, 80px);   /* ヒーロー見出し */
+  --fs-headline: clamp(32px, 5vw, 56px);  /* セクション見出し */
+  --fs-title: clamp(24px, 3vw, 32px);     /* カード見出し */
+  --fs-body-lg: clamp(19px, 2vw, 24px);   /* リード文 */
+  --fs-body: 17px;
+  --fs-caption: 14px;
+  --fs-nav: 12px;
+
+  --ls-display: -0.015em;  /* 和文主体なら -0.01em に緩める */
+  --ls-headline: -0.01em;
+  --ls-body: 0;
+  --ls-caption: 0.01em;
+
+  --lh-display: 1.05;
+  --lh-headline: 1.1;
+  --lh-body-ja: 1.75;   /* 日本語本文 */
+  --lh-body-en: 1.47;   /* 欧文本文 */
+
+  /* モーション */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --dur-fast: 180ms;
+  --dur-base: 400ms;
+  --dur-slow: 800ms;
+
+  /* ヘッダー */
+  --header-h: 48px;
+  --header-bg: rgba(255, 255, 255, 0.72);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-white: #000000;
+    --surface-gray: #1d1d1f;
+    --surface-black: #000000;
+    --surface-card: #1d1d1f;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --text-tertiary: #86868b;
+    --accent: #2997ff;
+    --accent-hover: #4aa9ff;
+    --accent-link: #2997ff;
+    --hairline: rgba(255, 255, 255, 0.16);
+    --header-bg: rgba(0, 0, 0, 0.72);
+  }
+}
+
+:root[data-theme="dark"] {
+  --surface-white: #000000;
+  --surface-gray: #1d1d1f;
+  --surface-black: #000000;
+  --surface-card: #1d1d1f;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #86868b;
+  --accent: #2997ff;
+  --accent-hover: #4aa9ff;
+  --accent-link: #2997ff;
+  --hairline: rgba(255, 255, 255, 0.16);
+  --header-bg: rgba(0, 0, 0, 0.72);
+}

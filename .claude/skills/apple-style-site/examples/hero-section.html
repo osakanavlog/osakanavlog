@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apple スタイル デモ</title>
+<!-- トークンは skill の references/tokens.css をそのまま読み込んでいる -->
+<link rel="stylesheet" href="../references/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body-ja);
+    color: var(--text-primary);
+    background: var(--surface-white);
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+  .section { padding-block: var(--section-y); }
+  .section--gray { background: var(--surface-gray); }
+  .section--dark { background: #000; color: var(--text-on-dark); }
+  .section--dark .subhead { color: var(--text-on-dark-secondary); }
+
+  /* ヘッダー */
+  .header {
+    position: sticky; top: 0; z-index: 50; height: var(--header-h);
+    display: flex; align-items: center;
+    background: var(--header-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .header strong { font-size: var(--fs-nav); font-weight: 600; letter-spacing: var(--ls-caption); }
+  .header ul { display: flex; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+  .header a { font-size: var(--fs-nav); color: var(--text-primary); opacity: .8; text-decoration: none; }
+  .header a:hover { opacity: 1; }
+
+  /* タイポグラフィ */
+  .hero { text-align: center; padding-top: var(--space-12); padding-bottom: var(--space-8); }
+  .hero__title {
+    font-size: var(--fs-display); font-weight: 600;
+    letter-spacing: -0.01em; line-height: var(--lh-display);
+    margin: 0 0 var(--space-2); font-feature-settings: "palt" 1;
+  }
+  .hero__sub { font-size: var(--fs-body-lg); color: var(--text-secondary); margin: 0 auto var(--space-3); max-width: 28em; }
+  .headline {
+    font-size: var(--fs-headline); font-weight: 600;
+    letter-spacing: var(--ls-headline); line-height: var(--lh-headline);
+    margin: 0 0 var(--space-2); font-feature-settings: "palt" 1;
+  }
+  .subhead { font-size: var(--fs-body-lg); color: var(--text-secondary); margin: 0; max-width: 32em; }
+  .eyebrow { font-size: var(--fs-caption); font-weight: 600; color: var(--accent); letter-spacing: var(--ls-caption); margin: 0 0 var(--space-1); }
+
+  /* ボタン */
+  .actions { display: flex; gap: var(--space-3); justify-content: center; align-items: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; border: 0; border-radius: var(--radius-pill);
+    padding: 12px 22px; font: inherit; line-height: 1.2; text-decoration: none; cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+  .btn--primary { background: var(--accent); color: #fff; }
+  .btn--primary:hover { background: var(--accent-hover); }
+  .link { color: var(--accent-link); text-decoration: none; }
+  .link:hover { text-decoration: underline; }
+  .link::after { content: " ›"; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+  /* 図版（本番では写真に差し替える） */
+  .visual { aspect-ratio: 16 / 9; border-radius: var(--radius-card-lg); background: linear-gradient(160deg, #dfe6ea, #b9c6cd); }
+  .section--dark .visual { background: linear-gradient(160deg, #1d1d1f, #3a3a3d); }
+
+  /* 2カラム */
+  .feature { display: grid; gap: var(--space-6); align-items: center; }
+  @media (min-width: 834px) {
+    .feature { grid-template-columns: 1fr 1fr; }
+    .feature--reverse .feature__media { order: -1; }
+  }
+
+  /* カード */
+  .cards { display: grid; gap: var(--space-2); grid-template-columns: 1fr; margin: var(--space-6) 0 0; padding: 0; list-style: none; }
+  @media (min-width: 834px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: var(--surface-card); border-radius: var(--radius-card-lg); padding: var(--space-4); }
+  .card h3 { font-size: var(--fs-title); font-weight: 600; letter-spacing: var(--ls-headline); margin: 0 0 var(--space-1); }
+  .card p { color: var(--text-secondary); margin: 0; }
+
+  /* 仕様表 */
+  .specs { border-top: 1px solid var(--hairline); margin-top: var(--space-6); }
+  .specs__row { display: grid; gap: var(--space-1); padding: var(--space-3) 0; border-bottom: 1px solid var(--hairline); }
+  @media (min-width: 834px) { .specs__row { grid-template-columns: 240px 1fr; gap: var(--space-2); } }
+  .specs__label { color: var(--text-secondary); font-size: var(--fs-caption); }
+  .specs__value { font-variant-numeric: tabular-nums; }
+
+  /* フッター */
+  .footer { padding-block: var(--space-6); font-size: var(--fs-caption); color: var(--text-secondary); border-top: 1px solid var(--hairline); }
+
+  /* スクロール出現 */
+  .reveal { opacity: 1; transform: none; }
+  .js .reveal { opacity: 0; transform: translateY(24px); }
+  .js .reveal.is-visible {
+    opacity: 1; transform: none;
+    transition: opacity var(--dur-slow) var(--ease-apple), transform var(--dur-slow) var(--ease-apple);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap">
+    <strong>Studio</strong>
+    <nav aria-label="メイン">
+      <ul>
+        <li><a href="#feature">特長</a></li>
+        <li><a href="#cards">できること</a></li>
+        <li><a href="#specs">仕様</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1 class="hero__title">静かに、速く。</h1>
+      <p class="hero__sub">余計なものを削ぎ落とした、新しい体験。</p>
+      <p class="actions">
+        <a class="btn btn--primary" href="#feature">詳しく見る</a>
+        <a class="link" href="#specs">仕様を確認</a>
+      </p>
+      <div class="visual" style="margin-top: var(--space-8);" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="section section--gray" id="feature">
+    <div class="wrap feature reveal">
+      <div>
+        <p class="eyebrow">Performance</p>
+        <h2 class="headline">速さは、静けさから。</h2>
+        <p class="subhead">必要な処理だけを、必要なときに。だから速く、そして静かです。</p>
+      </div>
+      <div class="feature__media visual" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="wrap feature feature--reverse reveal">
+      <div>
+        <p class="eyebrow">Design</p>
+        <h2 class="headline">余白が、主役をつくる。</h2>
+        <p class="subhead">画面の大半は何もない場所です。そこにあるものだけが、目に入ります。</p>
+      </div>
+      <div class="feature__media visual" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="section" id="cards">
+    <div class="wrap">
+      <h2 class="headline reveal">できること。</h2>
+      <ul class="cards">
+        <li class="card reveal"><h3>軽い</h3><p>読み込みは 1 秒未満。画像は必要になってから読み込みます。</p></li>
+        <li class="card reveal"><h3>読みやすい</h3><p>和文に合わせた行間と字送りで、長い文章でも疲れません。</p></li>
+        <li class="card reveal"><h3>届く</h3><p>キーボードでも読み上げでも、同じ体験になります。</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--gray" id="specs">
+    <div class="wrap">
+      <h2 class="headline reveal">仕様</h2>
+      <div class="specs">
+        <div class="specs__row"><div class="specs__label">コンテンツ幅</div><div class="specs__value">980 px</div></div>
+        <div class="specs__row"><div class="specs__label">ヒーロー見出し</div><div class="specs__value">clamp(40px, 7vw, 80px) / weight 600</div></div>
+        <div class="specs__row"><div class="specs__label">セクション余白</div><div class="specs__value">clamp(64px, 10vw, 128px)</div></div>
+        <div class="specs__row"><div class="specs__label">配色</div><div class="specs__value">#ffffff / #f5f5f7 / #000000 + アクセント 1 色</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">apple-style-site スキルのデモ。Apple のロゴ・商標・製品画像は使用していません。</div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js');
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('is-visible');
+      io.unobserve(e.target);
+    }
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transitionDelay = (Math.min(i % 3, 2) * 70) + 'ms';
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
